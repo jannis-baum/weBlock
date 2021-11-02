@@ -1,0 +1,3 @@
+run:
+	web-ext run
+
