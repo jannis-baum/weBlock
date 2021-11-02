@@ -10,5 +10,5 @@ install firefox and `web-ext`
 npm install --global web-ext
 ```
 
-run with `make run`
+run with `make run` in `/client/`
 
