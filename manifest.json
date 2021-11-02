@@ -1,0 +1,19 @@
+{
+
+  "manifest_version": 2,
+  "name": "Adblock Plus Plus",
+  "version": "1.0",
+
+  "description": "the ram- and cpu-lightest adblocker around ;) 10/10 on heise",
+
+  "icons": { },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["adblock-plus-plus.js"]
+    }
+  ]
+
+}
+
