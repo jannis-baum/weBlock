@@ -5,6 +5,7 @@ from nltk.corpus import wordnet
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':']
+    __word_vectors = None
     __sim_requirements = None
     __sim_statement = ''
 
@@ -26,7 +27,7 @@ class NLProcessor:
 
     @staticmethod
     def __get_word_vectors():
-        if not hasattr(NLProcessor, '_NLProcessor__word_vectors'):
+        if not NLProcessor.__word_vectors:
             NLProcessor.__word_vectors = api.load("glove-wiki-gigaword-100")
         return NLProcessor.__word_vectors
     
