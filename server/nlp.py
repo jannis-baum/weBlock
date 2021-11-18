@@ -4,7 +4,6 @@ nltk.download('wordnet')
 from nltk.corpus import wordnet
 
 class NLProcessor:
-    __word_vectors = api.load("glove-wiki-gigaword-100")
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':']
 
     @staticmethod
@@ -23,6 +22,12 @@ class NLProcessor:
         return set([syn for syn in NLProcessor.__normal_set(syns) if word not in syn] + [word, word + 's'])
 
     @staticmethod
+    def __get_word_vectors():
+        if not hasattr(NLProcessor, 'word_vectors'):
+            NLProcessor.word_vectors = api.load("glove-wiki-gigaword-100")
+        return NLProcessor.word_vectors
+
+    @staticmethod
     def similarity(requirements, statement, compare):
         if not requirements:
             return float('inf')
@@ -30,5 +35,5 @@ class NLProcessor:
         compare_normal_set = NLProcessor.__normal_set(compare.split(' '))
         if not (req_syns & compare_normal_set):
             return float('inf')
-        return NLProcessor.__word_vectors.wmdistance(compare, statement)
-
+        return NLProcessor.__get_word_vectors().wmdistance(compare, statement)
+    
