@@ -5,12 +5,15 @@ from nltk.corpus import wordnet
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':']
+    __sim_requirements = None
+    __sim_statement = ''
 
     @staticmethod
     def __normal_set(words):
         normal = set()
         for word in [word.lower() for word in words]:
-            normal.add(''.join([character for character in word if character not in NLProcessor.__filter_chars]))
+            normal_word = ''.join([character for character in word if character not in NLProcessor.__filter_chars])
+            normal.update(normal_word.split('_'))
         return normal
     
     @staticmethod
@@ -23,17 +26,26 @@ class NLProcessor:
 
     @staticmethod
     def __get_word_vectors():
-        if not hasattr(NLProcessor, 'word_vectors'):
-            NLProcessor.word_vectors = api.load("glove-wiki-gigaword-100")
-        return NLProcessor.word_vectors
+        if not hasattr(NLProcessor, '_NLProcessor__word_vectors'):
+            NLProcessor.__word_vectors = api.load("glove-wiki-gigaword-100")
+        return NLProcessor.__word_vectors
+    
+    @staticmethod
+    def set_word_vectors(vectors):
+        NLProcessor.__word_vectors = vectors
 
     @staticmethod
-    def similarity(requirements, statement, compare):
-        if not requirements:
-            return float('inf')
-        req_syns = set.union(*[NLProcessor.__synonyms(req) for req in requirements])
-        compare_normal_set = NLProcessor.__normal_set(compare.split(' '))
-        if not (req_syns & compare_normal_set):
-            return float('inf')
-        return NLProcessor.__get_word_vectors().wmdistance(compare, statement)
+    def set_similarity_data(requirements, statement):
+        NLProcessor.__sim_requirements = set.union(*[
+            NLProcessor.__synonyms(req) for req in requirements
+        ]) if requirements else None
+        NLProcessor.__sim_statement = statement
+
+    @staticmethod
+    def similarity(phrase):
+        if NLProcessor.__sim_requirements:
+            compare_normal_set = NLProcessor.__normal_set(phrase.split(' '))
+            if not (NLProcessor.__sim_requirements & compare_normal_set):
+                return 0
+        return 1 / NLProcessor.__get_word_vectors().wmdistance(phrase, NLProcessor.__sim_statement)
     
