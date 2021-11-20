@@ -1,14 +1,31 @@
+from os import fpathconf
 import gensim.downloader as api
 import nltk
 nltk.download('wordnet')
 from nltk.corpus import wordnet
 
 class NLProcessor:
-    __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':']
+    __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':'] 
+    __stop_words_path = 'stop_words_en.txt'
+    __stop_words = None
+    __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
     __sim_statement = ''
 
+    @staticmethod
+    def __get_stop_words():
+        if not NLProcessor.__stop_words:
+            with open(NLProcessor.__stop_words_path, 'r') as fp:
+                NLProcessor.__stop_words = fp.read().split('\n')
+        return NLProcessor.__stop_words
+
+    @staticmethod
+    def __get_word_vectors():
+        if not NLProcessor.__word_vectors:
+            NLProcessor.__word_vectors = api.load(NLProcessor.__word_vectors_id)
+        return NLProcessor.__word_vectors
+    
     @staticmethod
     def __normal_set(words):
         normal = set()
@@ -26,11 +43,9 @@ class NLProcessor:
         return set([syn for syn in NLProcessor.__normal_set(syns) if word not in syn] + [word, word + 's'])
 
     @staticmethod
-    def __get_word_vectors():
-        if not NLProcessor.__word_vectors:
-            NLProcessor.__word_vectors = api.load("glove-wiki-gigaword-100")
-        return NLProcessor.__word_vectors
-    
+    def __normalize(text):
+        return ' '.join([word.lower() for word in text.split(' ') if word not in NLProcessor.__get_stop_words()])
+
     @staticmethod
     def set_word_vectors(vectors):
         NLProcessor.__word_vectors = vectors
@@ -39,8 +54,8 @@ class NLProcessor:
     def set_similarity_data(requirements, statement):
         NLProcessor.__sim_requirements = set.union(*[
             NLProcessor.__synonyms(req) for req in requirements
-        ]) if requirements else None
-        NLProcessor.__sim_statement = statement
+       ]) if requirements else None
+        NLProcessor.__sim_statement = NLProcessor.__normalize(statement)
 
     @staticmethod
     def similarity(phrase):
@@ -48,5 +63,5 @@ class NLProcessor:
             compare_normal_set = NLProcessor.__normal_set(phrase.split(' '))
             if not (NLProcessor.__sim_requirements & compare_normal_set):
                 return 0
-        return 1 / NLProcessor.__get_word_vectors().wmdistance(phrase, NLProcessor.__sim_statement)
+        return 1 / NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normalize(phrase), NLProcessor.__sim_statement)
     

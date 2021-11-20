@@ -13,9 +13,20 @@ class PageElement:
     
     def text(self):
         return self.__element.text
+    
+    def set_text(self, new_text):
+        self.__element.string = new_text
+        self.__similarity = None
 
-    def set_text(self, text):
-        self.__element.string = text
+    def content(self):
+        return ''.join([str(sub_element) for sub_element in self.__element])
+
+    def set_content(self, new_content):
+        element_string = str(self.__element)
+        content = self.content()
+        content_index = element_string.index(content)
+        tag = (element_string[:content_index], element_string[content_index + len(content):])
+        self.__element = BeautifulSoup(tag[0] + new_content + tag[1], features='html.parser')
         self.__similarity = None
 
     def string(self):
@@ -35,7 +46,7 @@ class PageProcessor:
     def censor(self):
         for group in self.__text_groups.values():
             for element in group:
-                element.set_text(element.text() + f' --- {element.similarity()}')
+                element.set_text(element.text() + f'--- {element.similarity()}')
     
     def page(self):
         return str(self.__soup)
