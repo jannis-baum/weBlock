@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import socket
+from page_processor import PageProcessor
 
 def recv_full_page(conn):
     header = conn.recv(4).decode('utf-8')
@@ -22,10 +23,11 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
 s.bind(('', 6969))
 s.listen(1)
 
-while True:
-    c, addr = s.accept()
-    document = recv_full_page(c)
-    print(document)
-    c.send('response'.encode('utf-8'))
-    c.close()
+if __name__ == '__main__':
+    while True:
+        c, addr = s.accept()
+        document = recv_full_page(c)
+        pp = PageProcessor(document)
+        c.send(pp.censored().encode('utf-8'))
+        c.close()
 
