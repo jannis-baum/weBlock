@@ -26,8 +26,15 @@ s.listen(1)
 if __name__ == '__main__':
     while True:
         c, addr = s.accept()
+        print('opened connection')
         document = recv_full_page(c)
+        print('received document')
+        print('initializing PageProcessor ...')
         pp = PageProcessor(document)
+        print('initializing PageProcessor - done')
+        print('censoring page ...')
         c.send(pp.censored().encode('utf-8'))
+        print('censoring page - done')
+        print('closing connection')
         c.close()
 

@@ -23,7 +23,9 @@ class NLProcessor:
     @staticmethod
     def __get_word_vectors():
         if not NLProcessor.__word_vectors:
+            print('    loading word_vectors ...')
             NLProcessor.__word_vectors = api.load(NLProcessor.__word_vectors_id)
+            print('    loading word_vectors done')
         return NLProcessor.__word_vectors
     
     @staticmethod
