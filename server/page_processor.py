@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from nlp import NLProcessor
+import json
 
 class PageElement:
     def __init__(self, element):
@@ -13,40 +14,36 @@ class PageElement:
     
     def text(self):
         return self.__element.text
-    
-    def set_text(self, new_text):
-        self.__element.string = new_text
-        self.__similarity = None
 
     def content(self):
         return ''.join([str(sub_element) for sub_element in self.__element])
 
-    def set_content(self, new_content):
-        element_string = str(self.__element)
-        content = self.content()
-        content_index = element_string.index(content)
-        tag = (element_string[:content_index], element_string[content_index + len(content):])
-        self.__element = BeautifulSoup(tag[0] + new_content + tag[1], features='html.parser')
-        self.__similarity = None
-
-    def string(self):
-        return f'    text:\n        {self.__element.string}\n    similarity: {self.similarity()}'
-
 class PageProcessor:
-    relevant_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'p']
+    __relevant_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'p']
+    __censor_threshold = 0
+    __key_tag = 'tag'
+    __key_edits = 'edits'
+    __key_index = 'index'
+    __key_innerHTML = 'innerHTML'
 
     def __init__(self, html):
         self.__soup = BeautifulSoup(html, features='html.parser')
-        self.__text_groups = dict(zip(PageProcessor.relevant_tags,
+        self.__text_groups = dict(zip(PageProcessor.__relevant_tags,
             [
                 [PageElement(element) for element in self.__soup.find_all(key_tag) if element.text]
-            for key_tag in PageProcessor.relevant_tags]
+            for key_tag in PageProcessor.__relevant_tags]
         ))
     
-    def censor(self):
-        for group in self.__text_groups.values():
-            for element in group:
-                element.set_text(element.text() + f'--- {element.similarity()}')
+    def censored(self):
+        return json.dumps([ {
+                PageProcessor.__key_tag: tag,
+                PageProcessor.__key_edits: [ {
+                        PageProcessor.__key_index: idx,
+                        PageProcessor.__key_innerHTML: element.content() + f' <b>{element.similarity()}</b>'
+                    } for idx, element in enumerate(self.__text_groups[tag]) if element.similarity() > PageProcessor.__censor_threshold
+                ]
+            } for tag in PageProcessor.__relevant_tags
+        ])
     
     def page(self):
         return str(self.__soup)
