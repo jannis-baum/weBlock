@@ -26,6 +26,11 @@ class PageProcessor:
     __key_index = 'index'
     __key_innerHTML = 'innerHTML'
 
+    @staticmethod
+    def setupNLP(censoring_requirements, censoring_statement):
+        NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)
+        NLProcessor.ready()
+
     def __init__(self, html):
         self.__soup = BeautifulSoup(html, features='html.parser')
         self.__text_groups = dict(zip(PageProcessor.__relevant_tags,

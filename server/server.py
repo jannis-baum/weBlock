@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import socket
+import time
 from page_processor import PageProcessor
 
 def recv_full_page(conn):
@@ -23,18 +24,33 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
 s.bind(('', 6969))
 s.listen(1)
 
+def time_start(message):
+    print(message, end='', flush=True)
+    return time.perf_counter()
+
+def time_finish(start_time, message=' done'):
+    print(message + ' ({:.2f}s)'.format(time.perf_counter() - start_time))
+
 if __name__ == '__main__':
+    # check similarity with this sentence
+    censoring_statement = 'China censors content and suppresses women.'
+    # these words or any of their synonyms need to be in text to be considered similar to statement
+    censoring_requirements = ['china', 'chinese']
+    # prepare NLP
+    ts = time_start('NLP setup ...')
+    PageProcessor.setupNLP(censoring_requirements, censoring_statement)
+    time_finish(ts)
     while True:
         c, addr = s.accept()
         print('opened connection')
         document = recv_full_page(c)
-        print('received document')
-        print('initializing PageProcessor ...')
+        print('  - received document')
+        ts = time_start('  - initializing PageProcessor ...')
         pp = PageProcessor(document)
-        print('initializing PageProcessor - done')
-        print('censoring page ...')
+        time_finish(ts)
+        ts = time_start('  - censoring page & sending edits ...')
         c.send(pp.censored().encode('utf-8'))
-        print('censoring page - done')
-        print('closing connection')
+        time_finish(ts)
+        print('closing connection\n')
         c.close()
 

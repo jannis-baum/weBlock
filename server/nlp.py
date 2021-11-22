@@ -1,7 +1,6 @@
 from os import fpathconf
 import gensim.downloader as api
 import nltk
-nltk.download('wordnet')
 from nltk.corpus import wordnet
 
 class NLProcessor:
@@ -23,9 +22,7 @@ class NLProcessor:
     @staticmethod
     def __get_word_vectors():
         if not NLProcessor.__word_vectors:
-            print('    loading word_vectors ...')
             NLProcessor.__word_vectors = api.load(NLProcessor.__word_vectors_id)
-            print('    loading word_vectors done')
         return NLProcessor.__word_vectors
     
     @staticmethod
@@ -56,8 +53,13 @@ class NLProcessor:
     def set_similarity_data(requirements, statement):
         NLProcessor.__sim_requirements = set.union(*[
             NLProcessor.__synonyms(req) for req in requirements
-       ]) if requirements else None
+        ]) if requirements else None
         NLProcessor.__sim_statement = NLProcessor.__normalize(statement)
+    
+    @staticmethod
+    def ready():
+        NLProcessor.__get_stop_words()
+        NLProcessor.__get_word_vectors()
 
     @staticmethod
     def similarity(phrase):
