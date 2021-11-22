@@ -1,14 +1,6 @@
-# adblock-plus-plus
+# AdBlock Plus Plus
 
-the ram- and cpu-lightest adblocker around ;) 10/10 on heise
+AdBlock Plus Plus claims to be an ad-blocker that runs on a server to save client-side processing power, but secretly censors data at the deployer's disposal.
 
-## how to use
-
-install firefox and `web-ext`
-
-```
-npm install --global web-ext
-```
-
-run with `make run` in `/client/`
+This is a collaborative project with [lucasliebe](https://github.com/lucasliebe) and [tiny-fish-T](https://github.com/tiny-fish-T) and is being developed within the scope of a course named *DarkAI* at [HPI](https://hpi.de). The course's goal is to raise awareness about possible adverse effects of AI and provoke more critical thinking in handling software products.
 
