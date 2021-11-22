@@ -40,17 +40,24 @@ if __name__ == '__main__':
     ts = time_start('NLP setup ...')
     PageProcessor.setupNLP(censoring_requirements, censoring_statement)
     time_finish(ts)
+    print('setup done, waiting for connection\n')
+
     while True:
         c, addr = s.accept()
         print('opened connection')
+
+        ts = time_start('  - receiving document ...')
         document = recv_full_page(c)
-        print('  - received document')
+        time_finish(ts)
+        
         ts = time_start('  - initializing PageProcessor ...')
         pp = PageProcessor(document)
         time_finish(ts)
+
         ts = time_start('  - censoring page & sending edits ...')
         c.send(pp.censored().encode('utf-8'))
         time_finish(ts)
-        print('closing connection\n')
+
         c.close()
+        print('closed connection\n')
 
