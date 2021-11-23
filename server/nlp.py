@@ -4,7 +4,7 @@ import nltk
 from nltk.corpus import wordnet
 
 class NLProcessor:
-    __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':'] 
+    __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_'] 
     __stop_words_path = 'stop_words_en.txt'
     __stop_words = None
     __word_vectors_id = 'word2vec-google-news-300'
@@ -30,7 +30,7 @@ class NLProcessor:
         normal = set()
         for word in [word.lower() for word in words]:
             normal_word = ''.join([character for character in word if character not in NLProcessor.__filter_chars])
-            normal.update(normal_word.split('_'))
+            normal.add(normal_word)
         return normal
     
     @staticmethod
@@ -38,7 +38,8 @@ class NLProcessor:
         syns = []
         for syn in wordnet.synsets(word): 
             for lemm in syn.lemmas(): 
-                syns += [lemm.name(), lemm.name() + 's']
+                syn = lemm.name().replace('_', ' ')
+                syns += [syn, syn + 's']
         return set([syn for syn in NLProcessor.__normal_set(syns) if word not in syn] + [word, word + 's'])
 
     @staticmethod
