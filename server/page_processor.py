@@ -39,7 +39,7 @@ class PageProcessor:
             for key_tag in PageProcessor.__relevant_tags]
         ))
     
-    def censored(self):
+    def censoring_edits(self):
         return json.dumps([ {
                 PageProcessor.__key_tag: tag,
                 PageProcessor.__key_edits: [ {
