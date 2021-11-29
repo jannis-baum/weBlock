@@ -16,7 +16,20 @@ class Sentence:
         def log(self):
             print(f'{self.comp}: {self.words}')
 
-
+    # https://www.wordy.com/writers-workshop/basic-english-sentence-structure/
+    # https://academicguides.waldenu.edu/writingcenter/grammar/sentencestructure
+    #
+    # according to this, we can already identify 5 different simple sentence structures, mostly 3-tuples
+    # and 3 different ways of building long sentences: simple, compound, complex
+    # for complex clauses, we should try do identify the dependent clauses by the absence of subjects in them
+    # (subject is before predicate in an active clause), the rest would be a piece of cake.
+    # I propose splitting the sentences by commas, then identifying each clause as either independent clause or dependent.
+    # Afterwards, check if the independent clauses fit one of the 5 patterns, if the clause is dependent, add the previous subject to the 3-tuples.
+    
+    # One problem is that a complex sentence where the independent clause comes first doesnt have a comma.
+    # Proposed solution: deciding between active/passive clause & searching for a subject before the predicate.
+    # If no subject is given, it's a dependent clause.
+    
     class Triplet:
         def __init__(self, subject=None, predicate=None, obj=None):
             self.subject = subject
