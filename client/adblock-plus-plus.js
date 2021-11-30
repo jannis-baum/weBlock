@@ -1,5 +1,15 @@
-const relevant_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'];
+// ad-block
 
+function guardian_block_ads() {
+   for (ad of document.querySelectorAll("div[class*='ad-container'], div[class*='ad-slot']")) {
+      ad.parentNode.removeChild(ad);
+   }
+}
+guardian_block_ads();
+
+// censoring
+
+const relevant_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'];
 function sendstring() {
    var dict = {};
    for (tag of relevant_tags) {
