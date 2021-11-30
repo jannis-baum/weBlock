@@ -14,10 +14,12 @@ function sendstring() {
 }
 
 function edit_page(data) {
-   for (let [tag, innerHTMLs] of data) {
+   console.log('func called');
+   for (let tag in data) {
+      console.log(tag);
       elements = document.getElementsByTagName(tag);
       for (n in elements) {
-         elements[n].innerHTML = innerHTMLs[n];
+         elements[n].innerHTML = data[tag][n];
       }
    }
 }
@@ -28,6 +30,7 @@ const xhr = new XMLHttpRequest();
 xhr.open("POST", 'http://saltleague.net:6969');
 xhr.onreadystatechange = function () {
    if (xhr.readyState === 4) {
+      console.log(xhr.responseText);
       data = JSON.parse(xhr.responseText);
       edit_page(data);
       document.documentElement.hidden = false;
