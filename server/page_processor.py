@@ -29,6 +29,6 @@ class PageProcessor:
     def censoring_edits(self):
         return json.dumps({
             tag: [element.html + f' {element.similarity()}' for element in elements]
-            for tag, elements in self.__text_groups
+            for tag, elements in self.__text_groups.items()
         })
 
