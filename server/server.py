@@ -38,7 +38,7 @@ if __name__ == '__main__':
         ts = time_start('receiving document ...')
         document = recv_full_page(c)
         time_finish(ts)
-        c.send(document)
+        c.send(document.encode('utf-8'))
         c.close()
     sys.exit(0)
 
