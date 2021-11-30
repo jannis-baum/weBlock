@@ -23,7 +23,7 @@ class PageProcessor:
     def __init__(self, request):
         self.__text_groups = {
             tag: [PageElement(innerHTML) for innerHTML in innerHTMLs]
-            for tag, innerHTMLs in json.loads(request)
+            for tag, innerHTMLs in json.loads(request).items()
         }
     
     def censoring_edits(self):
