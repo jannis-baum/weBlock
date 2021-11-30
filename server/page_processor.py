@@ -13,8 +13,6 @@ class PageElement:
         return self.__similarity
     
 class PageProcessor:
-    __censor_threshold = 0
-
     @staticmethod
     def setupNLP(censoring_requirements, censoring_statement):
         NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)

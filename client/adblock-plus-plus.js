@@ -18,7 +18,10 @@ function edit_page(data) {
    for (let tag in data) {
       console.log(tag);
       elements = document.getElementsByTagName(tag);
-      for (n in elements) {
+      console.log('extracted elements');
+      console.log(elements);
+      for (let n = 0; n < elements.length; n++) {
+         console.log(n);
          elements[n].innerHTML = data[tag][n];
       }
    }
