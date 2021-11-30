@@ -33,15 +33,6 @@ def time_finish(start_time, message=' done'):
     print(message + ' ({:.2f}s)'.format(time.perf_counter() - start_time))
 
 if __name__ == '__main__':
-    while True:
-        c, addr = s.accept()
-        ts = time_start('receiving document ...')
-        document = recv_full_page(c)
-        time_finish(ts)
-        c.send(document.encode('utf-8'))
-        c.close()
-    sys.exit(0)
-
     # check similarity with this sentence
     censoring_statement = 'China censors content and suppresses women.'
     # these words or any of their synonyms need to be in text to be considered similar to statement
@@ -57,15 +48,15 @@ if __name__ == '__main__':
         print('opened connection')
 
         ts = time_start('  - receiving document ...')
-        document = recv_full_page(c)
+        request = recv_full_page(c)
         time_finish(ts)
         
         ts = time_start('  - initializing PageProcessor ...')
-        pp = PageProcessor(document)
+        pp = PageProcessor(request)
         time_finish(ts)
 
         ts = time_start('  - censoring page & sending edits ...')
-        c.send(pp.censored().encode('utf-8'))
+        c.send(pp.censoring_edits().encode('utf-8'))
         time_finish(ts)
 
         c.close()
