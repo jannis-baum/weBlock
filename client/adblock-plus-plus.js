@@ -1,13 +1,23 @@
-function edit_page(data) {
-   const key_tag = 'tag';
-   const key_edits = 'edits';
-   const key_index = 'index';
-   const key_innerHTML = 'innerHTML';
+const relevant_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'];
 
-   for (let dict of data) {
-      elements = document.getElementsByTagName(dict[key_tag]);
-      for (edit of dict[key_edits]) {
-         elements[edit[key_index]].innerHTML = edit[key_innerHTML];
+function sendstring() {
+   var dict = {};
+   for (tag of relevant_tags) {
+      elements = document.getElementsByTagName(tag);
+      list = [];
+      for (element of elements) {
+         list.push(element.innerHTML);
+      }
+      dict[tag] = list;
+   }
+   return JSON.stringify(dict);
+}
+
+function edit_page(data) {
+   for (let [tag, innerHTMLs] of data) {
+      elements = document.getElementsByTagName(tag);
+      for (n in elements) {
+         elements[n].innerHTML = innerHTMLs[n];
       }
    }
 }
@@ -18,12 +28,11 @@ const xhr = new XMLHttpRequest();
 xhr.open("POST", 'http://saltleague.net:6969');
 xhr.onreadystatechange = function () {
    if (xhr.readyState === 4) {
-      console.log('status: ' + xhr.status);
-      console.log('response: ' + xhr.responseText);
       data = JSON.parse(xhr.responseText);
       edit_page(data);
       document.documentElement.hidden = false;
    }
 };
-xhr.send(document.documentElement.innerHTML);
+
+xhr.send(sendstring());
 

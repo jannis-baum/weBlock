@@ -3,6 +3,7 @@
 import socket
 import time
 from page_processor import PageProcessor
+import sys
 
 def recv_full_page(conn):
     header = conn.recv(4).decode('utf-8')
@@ -32,6 +33,15 @@ def time_finish(start_time, message=' done'):
     print(message + ' ({:.2f}s)'.format(time.perf_counter() - start_time))
 
 if __name__ == '__main__':
+    while True:
+        c, addr = s.accept()
+        ts = time_start('receiving document ...')
+        document = recv_full_page(c)
+        time_finish(ts)
+        c.send(document)
+        c.close()
+    sys.exit(0)
+
     # check similarity with this sentence
     censoring_statement = 'China censors content and suppresses women.'
     # these words or any of their synonyms need to be in text to be considered similar to statement
