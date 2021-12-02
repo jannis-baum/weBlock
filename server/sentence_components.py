@@ -109,7 +109,7 @@ class Sentence:
                     subject = tup[0]
             if tup[1] in self.__predicate_candidates():
                 predicate.append(tup[0])
-        return Triplet(subject, predicate)
+        return Sentence.Triplet(subject, predicate)
     
     # takes an identified independent clause and greedily tries to fill
     # a triplet in the case that it is a type 2 independent clause:
@@ -129,7 +129,7 @@ class Sentence:
             if subject != None and tup[1] in self.__subject_candidates():
                 obj.append(tup[0])
         
-        return Triplet(subject, predicate, obj)
+        return Sentence.Triplet(subject, predicate, obj)
     
     # type 3: subject-verb-adjective
     # this is where our triplet class has it's issues - of course the adjective/adverb can be critical or uncritical of the regime...
@@ -144,7 +144,7 @@ class Sentence:
                 if tup[1] in self.__subject_candidates():
                     subject = tup[0]
             if tup[1] in self.__predicate_candidates():
-                predicates.append(tup[0])
+                predicate.append(tup[0])
             if adjective == None:
                 if tup[1] in self.__adjective_candidates():
                     adjective = tup[0]
@@ -162,8 +162,8 @@ class Sentence:
                 if tup[1] in self.__subject_candidates():
                     subject = tup[0]
             if tup[1] in self.__predicate_candidates():
-                predicates.append(tup[0])
-            if adjective == None:
+                predicate.append(tup[0])
+            if adverb == None:
                 if tup[1] in self.__adverb_candidates():
                     adverb = tup[0]
         return (subject, predicate, adverb)
@@ -179,7 +179,7 @@ class Sentence:
                 if tup[1] in self.__subject_candidates():
                     subject = tup[0]
             if tup[1] in self.__predicate_candidates():
-                predicates.append(tup[0])
+                predicate.append(tup[0])
             if subject != None and noun == None:
                 # a noun shouldn't be a personal pronoun
                 if tup[1] in ["NN", "NNS", "NNP", "NNPS"]:
@@ -202,7 +202,7 @@ class Sentence:
     
     
     # this is a prototype just to show how I imagined the sentence evaluation. the method probably belongs in the page_processor
-    def __evaluate_sentence(self, sentence)
+    def __evaluate_sentence(self, sentence):
         tuples = nltk.sent_tokenize(sentence)
         clauses = self.__split_sentence(tuples, sentence)
         #the information stored in triplet form
