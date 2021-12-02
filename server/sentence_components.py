@@ -1,21 +1,6 @@
 import nltk
 
 class Sentence:
-    class Component:
-        def __init__(self, word, tag):
-            self.words = [word]
-            if tag == 'PRP':
-                self.comp = 'S' if word.lower() in ['i', 'you', 'he', 'she', 'it', 'we', 'they'] else 'O'
-            elif tag.startswith('NN'): self.comp = 'SO'
-            elif tag.startswith('VB') or tag == 'MD': self.comp = 'P'
-            else: self.comp = None
-            
-        def add_words(self, words):
-            self.words += words
-        
-        def log(self):
-            print(f'{self.comp}: {self.words}')
-
     # https://www.wordy.com/writers-workshop/basic-english-sentence-structure/
     # https://academicguides.waldenu.edu/writingcenter/grammar/sentencestructure
     #
@@ -30,70 +15,38 @@ class Sentence:
     # Proposed solution: deciding between active/passive clause & searching for a subject before the predicate.
     # If no subject is given, it's a dependent clause.
     
-    class Triplet:
-        def __init__(self, subject=None, predicate=None, obj=None):
-            self.subject = subject
-            self.predicate = predicate
-            self.obj = obj
+    class Crux:
+        def __init__(self, actor=None, action=None, target=None, modifier=None):
+            self.actor = actor
+            self.action = action
+            self.target = target
+            self.modifier = modifier
+        
+        def value(self):
+            v = 0
+            if self.actor: v += 1
+            if self.action: v += len(self.action)
+            if self.target: v += len(self.target)
+            if self.modifier: v += 1
+            return v
         
         def log(self):
-            print(f'S: {self.subject}, P: {self.predicate}, O:{self.obj}')
+            print(f'{self.actor} {self.action} {self.target} {self.modifier}')
 
 
     def __init__(self, phrase):
         self.txt = phrase
-        self.triplets = self.__triplets(self.__unified_comps(self.__comps(self.txt)))
+        self.__evaluate()
 
-    def __comps(self, txt):
-        tokenized = nltk.word_tokenize(txt)
-        comps = list()
-        for word, tag in nltk.pos_tag(tokenized):
-            sc = Sentence.Component(word, tag)
-            if sc.comp:
-                comps.append(sc)
-        return comps
-    
-    def __unified_comps(self, comps):
-        unified = list()
-        current_comp = None
-        for comp in comps:
-            if comp.comp == current_comp:
-                unified[-1].add_words(comp.words)
-            else:
-                current_comp = comp.comp
-                unified.append(comp)
-        return unified
-    
-    def __triplets(self, comps):
-        subject = None
-        triplets = list()
-        for comp in comps:
-            if subject == None:
-                if 'S' in comp.comp:
-                    subject = comp.words
-                continue
-            if comp.comp == 'P':
-                triplets.append(Sentence.Triplet(subject, comp.words))
-                continue
-            if 'O' in comp.comp and triplets:
-                triplets[-1].obj = comp.words
-        return triplets
-    
-    
-    # some helper methods for nltk pos tag lists that I don't want to retype all the time
-    def __subject_candidates(self):
-        return ["NN", "NNS", "NNP", "NNPS", "PRP"]
-    
-    def __predicate_candidates(self):
-        return ["MD", "VB", "VBD", "VBG", "VBN", "VBP", "VPZ"]
-    
-    def __adjective_candidates(self):
-        return ["JJ", "JJR", "JJS"]
-    
-    def __adverb_candidates(self):
-        return ["RB", "RBR", "RBS"]
-    
-    
+    def log(self):
+        print(self.txt)
+        self.crux.log()
+
+    # some helper properties for nltk pos tag lists that I don't want to retype all the time
+    __subject_candidates = ["NN", "NNS", "NNP", "NNPS", "PRP"]
+    __predicate_candidates = ["MD", "VB", "VBD", "VBG", "VBN", "VBP", "VPZ"]
+    __adjective_candidates = ["JJ", "JJR", "JJS"]
+    __adverb_candidates = ["RB", "RBR", "RBS"]
     
     # this method takes an identified independent clause and greedily tries to fill
     # a triplet in the case that it is a type 1 independent clause
@@ -105,11 +58,11 @@ class Sentence:
         
         for tup in tuples:
             if subject == None:
-                if tup[1] in self.__subject_candidates():
+                if tup[1] in Sentence.__subject_candidates:
                     subject = tup[0]
-            if tup[1] in self.__predicate_candidates():
+            if tup[1] in Sentence.__predicate_candidates:
                 predicate.append(tup[0])
-        return Sentence.Triplet(subject, predicate)
+        return Sentence.Crux(subject, predicate)
     
     # takes an identified independent clause and greedily tries to fill
     # a triplet in the case that it is a type 2 independent clause:
@@ -121,15 +74,15 @@ class Sentence:
         obj = []
         
         for tup in tuples:
-            if subject == None:
-                if tup[1] in self.__subject_candidates():
-                    subject = tup[0]
-            if tup[1] in self.__predicate_candidates:
-                predicate.append(tup[0])
-            if subject != None and tup[1] in self.__subject_candidates():
+            if subject != None and tup[1] in Sentence.__subject_candidates:
                 obj.append(tup[0])
+            if subject == None:
+                if tup[1] in Sentence.__subject_candidates:
+                    subject = tup[0]
+            if tup[1] in Sentence.__predicate_candidates:
+                predicate.append(tup[0])
         
-        return Sentence.Triplet(subject, predicate, obj)
+        return Sentence.Crux(subject, predicate, obj)
     
     # type 3: subject-verb-adjective
     # this is where our triplet class has it's issues - of course the adjective/adverb can be critical or uncritical of the regime...
@@ -141,14 +94,14 @@ class Sentence:
         
         for tup in tuples:
             if subject == None:
-                if tup[1] in self.__subject_candidates():
+                if tup[1] in Sentence.__subject_candidates:
                     subject = tup[0]
-            if tup[1] in self.__predicate_candidates():
+            if tup[1] in Sentence.__predicate_candidates:
                 predicate.append(tup[0])
             if adjective == None:
-                if tup[1] in self.__adjective_candidates():
+                if tup[1] in Sentence.__adjective_candidates:
                     adjective = tup[0]
-        return (subject, predicate, adjective)
+        return Sentence.Crux(subject, predicate, None, adjective)
             
 
     # type 4: subject-verb-adverb
@@ -159,14 +112,14 @@ class Sentence:
         
         for tup in tuples:
             if subject == None:
-                if tup[1] in self.__subject_candidates():
+                if tup[1] in Sentence.__subject_candidates:
                     subject = tup[0]
-            if tup[1] in self.__predicate_candidates():
+            if tup[1] in Sentence.__predicate_candidates:
                 predicate.append(tup[0])
             if adverb == None:
-                if tup[1] in self.__adverb_candidates():
+                if tup[1] in Sentence.__adverb_candidates:
                     adverb = tup[0]
-        return (subject, predicate, adverb)
+        return Sentence.Crux(subject, predicate, None, adverb)
     
     # type 5: subject-verb-noun
     def __independent_clause_5(self, tuples):
@@ -175,16 +128,16 @@ class Sentence:
         noun = None
         
         for tup in tuples:
-            if subject == None:
-                if tup[1] in self.__subject_candidates():
-                    subject = tup[0]
-            if tup[1] in self.__predicate_candidates():
-                predicate.append(tup[0])
             if subject != None and noun == None:
                 # a noun shouldn't be a personal pronoun
                 if tup[1] in ["NN", "NNS", "NNP", "NNPS"]:
                     noun = tup[0]
-        return (subject, predicate, noun)
+            if subject == None:
+                if tup[1] in Sentence.__subject_candidates:
+                    subject = tup[0]
+            if tup[1] in Sentence.__predicate_candidates:
+                predicate.append(tup[0])
+        return Sentence.Crux(subject, predicate, noun)
     
     # takes an identified passive clause and greedily tries to fill
     # a triplet with the subject parameter and the predicate + object/adjective/adverb from the clause
@@ -197,50 +150,50 @@ class Sentence:
     # individual clauses, by splitting at commas and conjunctions (CC tag in nltk)
     # each individual clause can then be processed by the clause methods
     # returns lists of nltk-tag-lists (which I call tuples because fuck you)
-    def __split_sentence(self, tuples, sentence):
-        pass
+    def __split_sentence(self, tuples):
+        return tuples
     
     
     # this is a prototype just to show how I imagined the sentence evaluation. the method probably belongs in the page_processor
-    def __evaluate_sentence(self, sentence):
-        tuples = nltk.sent_tokenize(sentence)
-        clauses = self.__split_sentence(tuples, sentence)
-        #the information stored in triplet form
-        aspects = []
-        
-        censoring = False
+    def __evaluate(self):
         # this is where our customization comes into play
         protected_actor_list = []
         protected_action_list = []
         # a bonus in case we want interactions with a specific actor to be censored in all cases
         shit_list = []
+
+        tuples = nltk.pos_tag(nltk.word_tokenize(self.txt))
+        max_value = -1 
+        winning_crux = None
+        for clause_parser in [self.__independent_clause_1, self.__independent_clause_5, self.__independent_clause_2, self.__independent_clause_3, self.__independent_clause_4]:
+            crux = clause_parser(tuples)
+            if crux.value() > max_value:
+                winning_crux = crux
+                max_value = winning_crux.value()
+        self.crux = winning_crux
+        return
+
+        clauses = self.__split_sentence(tuples)
         
+        aspects = []
         for clause in clauses:
-            it1 = self.__independent_clause_1(clause)
-            #...same for types 2-5 and dependent clauses
-            
-            # likely that the clause is an independent clause type 1
-            # of course, one clause can fit multiple types, we can solve this by either prioritizing one clause type over another, or thinking of something else...
-            if None not in it1:
-                aspects.append(it1)
-                continue
+            max_value = -1 
+            winning_crux = None
+            for clause_parser in [self.__independent_clause_1, self.__independent_clause_2, self.__independent_clause_3, self.__independent_clause_4, self.__independent_clause_5]:
+                crux = clause_parser(clause)
+                if crux.value() > max_value: winning_crux = crux
+            aspects.append(winning_crux)
         
-        # assuming that aspects are 3-tuples like in __independent_clause_4 (but we can exchange it with a new class)
+        censoring = False
         for aspect in aspects:
-            if aspect[0] in protected_actor_list:
-                if aspect[1] in protected_action_list:
+            if aspect.actor in protected_actor_list:
+                if aspect.action in protected_action_list:
                     censoring = True
-                if aspect[2] in shit_list:
+                if aspect.target in shit_list or aspect.modifier in shit_list:
                     censoring = True
         
         return censoring
         
-
-    def log(self):
-        print(self.txt)
-        for t in self.triplets:
-            t.log()
-
 
 class Text:
     def __init__(self, txt):
@@ -252,5 +205,5 @@ class Text:
     def log(self):
         for s in self.sentences:
             s.log()
-            print('')
+            print()
 
