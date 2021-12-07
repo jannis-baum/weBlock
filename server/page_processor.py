@@ -25,7 +25,6 @@ class PageElement:
     def score(self):
         sim = (sum([context.similarity() for context in self.__context_elements]) + self.similarity()) / len(self.__context_elements)\
             if self.__context_elements else self.similarity()
-        print(self.__context_elements)
         return (sim + self.sentiment()) * self.sentiment() * 100
     
 class PageProcessor:
