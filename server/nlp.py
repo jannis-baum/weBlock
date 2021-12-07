@@ -2,6 +2,7 @@ from os import fpathconf
 import gensim.downloader as api
 import nltk
 from nltk.corpus import wordnet
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_'] 
@@ -11,6 +12,7 @@ class NLProcessor:
     __word_vectors = None
     __sim_requirements = None
     __sim_statement = ''
+    __sentimentIA = SentimentIntensityAnalyzer()
 
     @staticmethod
     def __get_stop_words():
@@ -70,3 +72,7 @@ class NLProcessor:
                 return 0
         return 1 / NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normalize(phrase), NLProcessor.__sim_statement)
     
+    @staticmethod
+    def sentiment(phrase):
+        return NLProcessor.__sentimentIA.polarity_scores(phrase)
+

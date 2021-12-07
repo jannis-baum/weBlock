@@ -6,11 +6,17 @@ class PageElement:
         self.html = html
         self.text = re.sub('<.*>', '', html)
         self.__similarity = None
+        self.__sentiment = None
     
     def similarity(self):
         if not self.__similarity:
             self.__similarity = NLProcessor.similarity(self.text)
         return self.__similarity
+    
+    def sentiment(self):
+        if not self.__sentiment:
+            self.__sentiment = NLProcessor.sentiment(self.text)
+        return self.__sentiment['neg']
     
 class PageProcessor:
     @staticmethod
@@ -26,7 +32,7 @@ class PageProcessor:
     
     def censoring_edits(self):
         return json.dumps({
-            tag: [element.html + f' {element.similarity()}' for element in elements]
+            tag: [element.html + f' <code>sim: {element.similarity():.2f} sent: {element.sentiment()}</code>' for element in elements]
             for tag, elements in self.__text_groups.items()
         })
 
