@@ -44,7 +44,6 @@ class PageProcessor:
                 if i > 2: sim_avg -= sim_vals.pop(0)
                 sim_vals.append(tg.similarity())
                 sim_avg += tg.similarity()
-                print(len(sim_vals))
                 rolling_sims[tag].append(sim_avg / len(sim_vals))
 
         return json.dumps({
