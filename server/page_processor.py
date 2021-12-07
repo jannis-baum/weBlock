@@ -5,8 +5,12 @@ class PageElement:
     def __init__(self, html):
         self.html = html
         self.text = re.sub('<.*>', '', html)
+        self.__context_elements = list()
         self.__similarity = None
         self.__sentiment = None
+    
+    def set_context(self, context_elements):
+        self.__context_elements = context_elements
     
     def similarity(self):
         if not self.__similarity:
@@ -19,8 +23,10 @@ class PageElement:
         return self.__sentiment['neg']
     
     def score(self):
-        return (self.similarity() + self.sentiment()) 
-        return self.sentiment() * self.similarity() * 100
+        sim = (sum([context.similarity() for context in self.__context_elements]) + self.similarity()) / len(self.__context_elements)\
+            if self.__context_elements else self.similarity()
+        print(self.__context_elements)
+        return (sim + self.sentiment()) * self.sentiment() * 100
     
 class PageProcessor:
     @staticmethod
@@ -29,27 +35,20 @@ class PageProcessor:
         NLProcessor.ready()
 
     def __init__(self, request):
-        self.__text_groups = {
-            tag: [PageElement(innerHTML) for innerHTML in innerHTMLs]
-            for tag, innerHTMLs in json.loads(request).items()
-        }
+        self.__text_groups = dict()
+        for tag, innerHTMLs in json.loads(request).items():
+            self.__text_groups[tag] = list()
+            for i, innerHTML in enumerate(innerHTMLs):
+                self.__text_groups[tag].append(PageElement(innerHTML))
+                if i:
+                    context_elements = self.__text_groups[tag][i - (min(3, i)):i]
+                    self.__text_groups[tag][i].set_context(context_elements)
     
     def censoring_edits(self):
-        rolling_sims = dict()
-        for tag in self.__text_groups:
-            rolling_sims[tag] = list()
-            sim_vals = list()
-            sim_avg = 0
-            for i, tg in enumerate(self.__text_groups[tag]):
-                if i > 2: sim_avg -= sim_vals.pop(0)
-                sim_vals.append(tg.similarity())
-                sim_avg += tg.similarity()
-                rolling_sims[tag].append(sim_avg / len(sim_vals))
-
         return json.dumps({
             tag: [element.html
-                + f' <code>score: {((rolling_sims[tag][i] + element.sentiment()) * element.sentiment() * 100):.2f}</code>'
-                for i, element in enumerate(elements)]
+                + f' <code>score: {element.score():.2f}</code>'
+                for element in elements]
             for tag, elements in self.__text_groups.items()
         })
 
