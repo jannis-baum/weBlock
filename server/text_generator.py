@@ -33,14 +33,17 @@ class TextGenerator:
 
     @staticmethod
     def generate(context):
-        text = TextGenerator.__without_fchars(context) + TextGenerator.context_suffix
-        inputs = TextGenerator.__get_tokenizer().encode(text, return_tensors='pt')
-        outputs = TextGenerator.__get_model().generate(
-            inputs, max_length=len(inputs[0]) + TextGenerator.__paragraph_max_len, do_sample=True, top_k=50
-        )
-        generated_text = TextGenerator.__get_tokenizer().decode(outputs[0], skip_special_tokens=True)[len(text):]
-        return generated_text[:len(generated_text) - generated_text[::-1].index('.')]\
-            .replace('\n\n', ' ').replace('\n', ' ')\
-            .filter(lambda c: c in TextGenerator.__whitelist_chars)
-
+        try:
+            text = TextGenerator.__without_fchars(context) + TextGenerator.context_suffix
+            inputs = TextGenerator.__get_tokenizer().encode(text, return_tensors='pt')
+            outputs = TextGenerator.__get_model().generate(
+                inputs, max_length=len(inputs[0]) + TextGenerator.__paragraph_max_len, do_sample=True, top_k=50
+            )
+            generated_text = TextGenerator.__get_tokenizer().decode(outputs[0], skip_special_tokens=True)[len(text):]
+            generated_text = generated_text[:len(generated_text) - generated_text[::-1].index('.')]\
+                .replace('\n\n', ' ').replace('\n', ' ')
+            return [c for c in generated_text if c in TextGenerator.__whitelist_chars]
+        except:
+            print('x', end='')
+            return TextGenerator.generate(context)
 
