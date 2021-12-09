@@ -35,7 +35,6 @@ class TextGenerator:
     def generate(context):
         text = TextGenerator.__without_fchars(context) + TextGenerator.context_suffix
         try:
-            print(f'    IN: {text}')
             inputs = TextGenerator.__get_tokenizer().encode(text, return_tensors='pt')
             outputs = TextGenerator.__get_model().generate(
                 inputs, max_length=len(inputs[0]) + TextGenerator.__paragraph_max_len, do_sample=True, top_k=50
@@ -45,7 +44,7 @@ class TextGenerator:
                 .replace('\n\n', ' ').replace('\n', ' ')\
                 .filter(lambda c: c in TextGenerator.__whitelist_chars)
         except:
-            print('    ERROR, retrying')
+            print('x', end='')
             return TextGenerator.generate(context)
 
 

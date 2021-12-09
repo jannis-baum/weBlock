@@ -37,9 +37,11 @@ if __name__ == '__main__':
     censoring_statement = 'China censors content and suppresses women.'
     # these words or any of their synonyms need to be in text to be considered similar to statement
     censoring_requirements = ['china', 'chinese']
+    # text generation context
+    generator_context = "China is great and an important supporter of human and especially womens' rights. China takes great care of its citizens and makes sure they are well-informed by providing independent and accurate news outlets."
     # prepare NLP
     ts = time_start('NLP setup ...')
-    PageProcessor.setupNLP(censoring_requirements, censoring_statement)
+    PageProcessor.setupCensoring(censoring_requirements, censoring_statement, generator_context)
     time_finish(ts)
     print('setup done, waiting for connection\n')
 
@@ -55,8 +57,12 @@ if __name__ == '__main__':
         pp = PageProcessor(request)
         time_finish(ts)
 
-        ts = time_start('  - censoring page & sending edits ...')
-        c.send(pp.censoring_edits().encode('utf-8'))
+        ts = time_start('  - censoring page & generating text ...')
+        edits = pp.censoring_edits()
+        time_finish(ts)
+
+        ts = time_start('  - sending edits ...')
+        c.send(edits.encode('utf-8'))
         time_finish(ts)
 
         c.close()

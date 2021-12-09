@@ -32,10 +32,10 @@ class PageProcessor:
     censoring_threshold = 10
 
     @staticmethod
-    def setupCensoring(censoring_requirements, censoring_statement, generatorContext):
+    def setupCensoring(censoring_requirements, censoring_statement, generator_context):
         NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)
         NLProcessor.ready()
-        TextGenerator.ready(context_suffix=generatorContext)
+        TextGenerator.ready(context_suffix=generator_context)
 
     def __init__(self, request):
         self.__text_groups = dict()
@@ -50,10 +50,8 @@ class PageProcessor:
     def censoring_edits(self):
         for element in [elements for element_groups in self.__text_groups.values() for elements in element_groups]:
             if element.score() >= PageProcessor.censoring_threshold:
-                print(f'censoring "{element.text}"')
-                print(f'with "{element.context_elements[-1].text if element.context_elements else ""}"')
+                print('.', end='')
                 element.text = TextGenerator.generate(element.context_elements[-1].text if element.context_elements else '')
-                print(f'OUT: {element.text}\n\n')
                 element.html = element.text
 
         return json.dumps({
