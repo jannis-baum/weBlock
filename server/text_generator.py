@@ -42,7 +42,7 @@ class TextGenerator:
             generated_text = TextGenerator.__get_tokenizer().decode(outputs[0], skip_special_tokens=True)[len(text):]
             generated_text = generated_text[:len(generated_text) - generated_text[::-1].index('.')]\
                 .replace('\n\n', ' ').replace('\n', ' ')
-            return [c for c in generated_text if c in TextGenerator.__whitelist_chars]
+            return ''.join([c for c in generated_text if c in TextGenerator.__whitelist_chars])
         except:
             print('x', end='')
             return TextGenerator.generate(context)
