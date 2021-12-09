@@ -5,7 +5,7 @@ from nltk.corpus import wordnet
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 class NLProcessor:
-    __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_'] 
+    __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_', '*'] 
     __stop_words_path = 'stop_words_en.txt'
     __stop_words = None
     __word_vectors_id = 'word2vec-google-news-300'

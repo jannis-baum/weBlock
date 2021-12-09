@@ -1,16 +1,17 @@
 from nlp import NLProcessor
+from text_generator import TextGenerator
 import json, re
 
 class PageElement:
     def __init__(self, html):
         self.html = html
         self.text = re.sub('<.*>', '', html)
-        self.__context_elements = list()
+        self.context_elements = list()
         self.__similarity = None
         self.__sentiment = None
     
     def set_context(self, context_elements):
-        self.__context_elements = context_elements
+        self.context_elements = context_elements
     
     def similarity(self):
         if not self.__similarity:
@@ -23,15 +24,18 @@ class PageElement:
         return self.__sentiment['neg']
     
     def score(self):
-        sim = (sum([context.similarity() for context in self.__context_elements]) + self.similarity()) / len(self.__context_elements)\
-            if self.__context_elements else self.similarity()
+        sim = (sum([context.similarity() for context in self.context_elements]) + self.similarity()) / len(self.context_elements)\
+            if self.context_elements else self.similarity()
         return (sim + self.sentiment()) * self.sentiment() * 100
     
 class PageProcessor:
+    censoring_threshold = 10
+
     @staticmethod
-    def setupNLP(censoring_requirements, censoring_statement):
+    def setupCensoring(censoring_requirements, censoring_statement, generatorContext):
         NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)
         NLProcessor.ready()
+        TextGenerator.ready(context_suffix=generatorContext)
 
     def __init__(self, request):
         self.__text_groups = dict()
@@ -44,10 +48,15 @@ class PageProcessor:
                     self.__text_groups[tag][i].set_context(context_elements)
     
     def censoring_edits(self):
+        for element in [elements for element_groups in self.__text_groups.values() for elements in element_groups]:
+            if element.score() >= PageProcessor.censoring_threshold:
+                print(f'censoring "{element.text}"')
+                print(f'with "{element.context_elements[-1].text if element.context_elements else ""}"')
+                element.text = TextGenerator.generate(element.context_elements[-1].text if element.context_elements else '')
+                print(f'OUT: {element.text}\n\n')
+                element.html = element.text
+
         return json.dumps({
-            tag: [element.html
-                + f' <code>score: {element.score():.2f}</code>'
-                for element in elements]
-            for tag, elements in self.__text_groups.items()
-        })
+            tag: [ element.html for element in elements]
+        for tag, elements in self.__text_groups.items() })
 
