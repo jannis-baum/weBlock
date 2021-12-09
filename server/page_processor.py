@@ -48,9 +48,10 @@ class PageProcessor:
                     self.__text_groups[tag][i].set_context(context_elements)
     
     def censoring_edits(self):
-        for element in [elements for element_groups in self.__text_groups.values() for elements in element_groups]:
+        elements_flat = [elements for element_groups in self.__text_groups.values() for elements in element_groups]
+        for n, element in enumerate(elements_flat):
             if element.score() >= PageProcessor.censoring_threshold:
-                print('.', end='')
+                print(f'({n}/{len(elements_flat)})', end='')
                 element.text = TextGenerator.generate(element.context_elements[-1].text if element.context_elements else '')
                 element.html = element.text
 

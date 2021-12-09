@@ -44,7 +44,7 @@ class TextGenerator:
                 .replace('\n\n', ' ').replace('\n', ' ')\
                 .filter(lambda c: c in TextGenerator.__whitelist_chars)
         except:
-            print('x', end='')
-            return TextGenerator.generate(context)
+            print(context)
+            return 'error'
 
 
