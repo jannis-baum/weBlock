@@ -15,7 +15,7 @@ class PageElement:
     
     def similarity(self):
         if not self.__similarity:
-            self.__similarity = NLProcessor.similarity(self.text)
+            self.__similarity = 1# NLProcessor.similarity(self.text)
         return self.__similarity
     
     def sentiment(self):
@@ -34,7 +34,7 @@ class PageProcessor:
     @staticmethod
     def setupCensoring(censoring_requirements, censoring_statement, generator_context):
         NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)
-        NLProcessor.ready()
+        # NLProcessor.ready()
         TextGenerator.ready(context_suffix=generator_context)
 
     def __init__(self, request):
