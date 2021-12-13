@@ -49,7 +49,7 @@ class PageProcessor:
                     context_elements = self.__text_groups[tag][i - (min(3, i)):i]
                     self.__text_groups[tag][i].set_context(context_elements)
     
-    def censoring_edits(self, generate):
+    def censoring_edits(self):
         elements_flat = [elements for element_groups in self.__text_groups.values() for elements in element_groups]
         for element in elements_flat:
             if element.score() >= PageProcessor.censoring_threshold:
