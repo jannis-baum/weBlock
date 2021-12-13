@@ -15,7 +15,7 @@ class PageElement:
     
     def similarity(self):
         if not self.__similarity:
-            self.__similarity = 1# NLProcessor.similarity(self.text)
+            self.__similarity = NLProcessor.similarity(self.text)
         return self.__similarity
     
     def sentiment(self):
@@ -34,12 +34,14 @@ class PageProcessor:
     @staticmethod
     def setupCensoring(censoring_requirements, censoring_statement, generator_context):
         NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)
-        # NLProcessor.ready()
+        NLProcessor.ready()
         TextGenerator.ready(context_suffix=generator_context)
 
     def __init__(self, request):
+        data = json.loads(request)
+        self.should_generate = data['gen_text']
         self.__text_groups = dict()
-        for tag, innerHTMLs in json.loads(request).items():
+        for tag, innerHTMLs in data['page'].items():
             self.__text_groups[tag] = list()
             for i, innerHTML in enumerate(innerHTMLs):
                 self.__text_groups[tag].append(PageElement(innerHTML))
@@ -47,11 +49,12 @@ class PageProcessor:
                     context_elements = self.__text_groups[tag][i - (min(3, i)):i]
                     self.__text_groups[tag][i].set_context(context_elements)
     
-    def censoring_edits(self):
+    def censoring_edits(self, generate):
         elements_flat = [elements for element_groups in self.__text_groups.values() for elements in element_groups]
         for element in elements_flat:
             if element.score() >= PageProcessor.censoring_threshold:
-                element.text = 'hola hola'
+                if self.should_generate:
+                    element.text = TextGenerator.generate(element.context_elements[-1].text if element.context_elements else '')
                 element.html = '<div style="color: red !important;">' + element.text + '</div>'
                                
         return json.dumps({
