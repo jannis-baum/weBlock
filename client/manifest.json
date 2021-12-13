@@ -1,24 +1,22 @@
 {
-
-  "manifest_version": 2,
-  "name": "Adblock Plus Plus",
-  "version": "1.0",
-
-  "description": "the ram- and cpu-lightest adblocker around ;) 10/10 on heise",
-
-  "icons": { },
-
-  "permissions": [
-      "webRequest",
-      "<all_urls>"
-  ],
-
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["adblock-plus-plus.js"]
+    "manifest_version": 2,
+    "name": "Adblock Plus Plus",
+    "version": "1.0",
+    "description": "the ram- and cpu-lightest adblocker around ;) 10/10 on heise",
+    "icons": {},
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "permissions": [
+        "webRequest",
+        "<all_urls>",
+        "activeTab",
+        "tabs"
+    ],
+    "page_action": {
+        "icon": "icons/icon.svg",
+        "browser_style": true
     }
-  ]
-
 }
-
