@@ -49,12 +49,11 @@ class PageProcessor:
     
     def censoring_edits(self):
         elements_flat = [elements for element_groups in self.__text_groups.values() for elements in element_groups]
-        for n, element in enumerate(elements_flat):
+        for element in elements_flat:
             if element.score() >= PageProcessor.censoring_threshold:
-                print(f'({n}/{len(elements_flat)})', end='')
-                element.text = TextGenerator.generate(element.context_elements[-1].text if element.context_elements else '')
-                element.html = element.text
-
+                element.text = 'hola hola'
+                element.html = '<div style="color: red !important;">' + element.text + '</div>'
+                               
         return json.dumps({
             tag: [ element.html for element in elements]
         for tag, elements in self.__text_groups.items() })
