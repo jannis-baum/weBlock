@@ -24,43 +24,53 @@ class Sentence:
             'adjective': ["JJ", "JJR", "JJS"],
             'adverb': ["RB", "RBR", "RBS"],
         }
+
+        __forms_of_be = ['be', 'am', 'is', 'are', 'was', 'were', 'been', 'being']
     
         def __init__(self, tuples):
             self.tuples = tuples
             self.atts = {
                 pos: [n for n, t in enumerate(self.tuples) if t[1] in candidates]
             for pos, candidates in Sentence.Crux.__candidates.items()}
+            self.active = not bool([
+                p for n, p in enumerate(self.atts['predicate'][:-1])
+                    if self.tuples[p][0] in Sentence.Crux.__forms_of_be
+                        and self.tuples[self.atts['predicate'][n+1]][1] == 'VBN'
+            ])
             # normaler hauptsatz: subject candidates vor pradikat gehoren zum subject, der rest zum objekt
             # wenn kein pradikat zwischen subjekt kandidaten, dann vermutlich nebensatz -> subj kandidaten sind ein objekt
             self.independent = bool(self.atts['subject'] and [idx for idx in self.atts['predicate'] if idx in range(self.atts['subject'][0], self.atts['subject'][-1])])
-            if self.independent:
-                subj_c = self.atts['subject']
-                self.atts['subject'] = []
-                for idx in subj_c:
-                    if idx < self.atts['predicate'][0]: self.atts['subject'].append(idx)
-                    else: self.atts['object'].append(idx)
-            else:
-                self.atts['object'] = self.atts['subject']
-                self.atts['subject'] = []
+            # if self.independent:
+                # subj_c = self.atts['subject']
+                # self.atts['subject'] = []
+                # for idx in subj_c:
+                    # if idx < self.atts['predicate'][0]: self.atts['subject'].append(idx)
+                    # else: self.atts['object'].append(idx)
+            # else:
+                # self.atts['object'] = self.atts['subject']
+                # self.atts['subject'] = []
         
         def log(self):
-            print([t[0] for t in self.tuples])
-            print({k: [self.tuples[i][0] for i in v] for k, v in self.atts.items()})
+            # print({k: [self.tuples[i][0] for i in v] for k, v in self.atts.items()})
+            print([t for t in self.tuples])
+            print(self.active)
     
-    __phrase_split_tags = ['CC', 'IN', 'LS', 'WDT', 'WP']
+    __phrase_split_tags = ['CC', 'LS', 'WDT', 'WP']
+
+    # passive: {} + past participle (VBN)
 
     def __init__(self, phrase):
         self.txt = phrase.replace('can\'t', 'cannot').replace('won\'t', 'will not').replace('n\'t', ' not')
         self.subphrases = self.txt.split(',')
-        sp_tuples = [nltk.pos_tag(nltk.word_tokenize(sp)) for sp in self.subphrases]
-        tuples = list()
-        for spt in sp_tuples:
-            split_idcs = [0] + [n for n, t in enumerate(spt) if t[1] in Sentence.__phrase_split_tags] + [len(spt) - 1]
-            tuples += [
-                spt[split_idcs[n]:split_idcs[n + 1]]
-            for n in range(len(split_idcs[:-1]))]
-            
-        self.cruxes = [Sentence.Crux(t) for t in tuples]
+        self.cruxes = list()
+        for sp in self.subphrases:
+            tuples = nltk.pos_tag(nltk.word_tokenize(sp))
+            last_split = 0
+            for n, t in enumerate(tuples):
+                if t[1] in Sentence.__phrase_split_tags:
+                    self.cruxes.append(Sentence.Crux(tuples[last_split:n]))
+                    last_split = n
+            self.cruxes.append(Sentence.Crux(tuples[last_split:]))
 
     def log(self):
         print(self.txt)
