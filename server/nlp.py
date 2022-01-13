@@ -3,6 +3,8 @@ import gensim.downloader as api
 import nltk
 from nltk.corpus import wordnet
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_', '*'] 
@@ -11,7 +13,7 @@ class NLProcessor:
     __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
-    __sim_statement = ''
+    __sim_statements = list()
     __sentimentIA = SentimentIntensityAnalyzer()
 
     @staticmethod
@@ -53,11 +55,27 @@ class NLProcessor:
         NLProcessor.__word_vectors = vectors
 
     @staticmethod
-    def set_similarity_data(requirements, statement):
+    def set_similarity_reqs(requirements):
         NLProcessor.__sim_requirements = set.union(*[
             NLProcessor.__synonyms(req) for req in requirements
         ]) if requirements else None
-        NLProcessor.__sim_statement = NLProcessor.__normalize(statement)
+
+    @staticmethod
+    def save_summarized(document):
+        sentences = sent_tokenize(document)
+        tokens = list({ token for sentence in sentences for token in word_tokenize(sentence) if token not in NLProcessor.__get_stop_words() })
+
+        word_frequencies = [ (token, document.count(token)) for token in tokens ]
+        word_frequencies.sort(key=lambda x: x[1])
+        max_frequency = word_frequencies[-1][1]
+
+        weighted_frequencies = { freq[0]: freq[1] / max_frequency for freq in word_frequencies }
+
+        sentence_scores = [
+            (sentence, sum([ weighted_frequencies[word] for word in sentence.split(' ') if word in tokens ]))
+        for sentence in sentences]
+        sentence_scores.sort(reverse=True, key=lambda x: x[1])
+        NLProcessor.__sim_statements.append(NLProcessor.__normalize(sentence_scores[:max(2, int(len(sentences) / 20))]))
     
     @staticmethod
     def ready():
@@ -70,9 +88,9 @@ class NLProcessor:
             compare_normal_set = NLProcessor.__normal_set(phrase.split(' '))
             if not (NLProcessor.__sim_requirements & compare_normal_set):
                 return 0
-        return 1 / NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normalize(phrase), NLProcessor.__sim_statement)
+        return 1 / (sum([NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normalize(phrase), sim) for sim in NLProcessor.__sim_statements]) / len(NLProcessor.__sim_statements))
     
     @staticmethod
     def sentiment(phrase):
         return NLProcessor.__sentimentIA.polarity_scores(phrase)
-
+    
