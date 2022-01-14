@@ -3,7 +3,6 @@
 import socket
 import time
 from page_processor import PageProcessor
-import sys
 
 def recv_full_page(conn):
     header = conn.recv(4).decode('utf-8')
