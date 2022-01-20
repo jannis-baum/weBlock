@@ -12,7 +12,7 @@ class Database:
     __cursor = __db.cursor()
 
     @staticmethod
-    def add_values(vals):
+    def insert(vals):
         if type(vals) is list:
             Database.__cursor.executemany(Database.__insertion, vals)
         else:
