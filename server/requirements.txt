@@ -1,0 +1,7 @@
+gensim>=4.1.2
+mysql>=0.0.3
+mysql-connector-python>=8.0.27
+mysqlclient>=2.1.0
+nltk>=3.6.5
+python-dotenv>=0.19.2
+websockets>=8.1
