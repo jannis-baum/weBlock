@@ -18,7 +18,7 @@ class NLProcessor:
         return ' '.join([word.lower() for word in text.split(' ') if word not in NLProcessor.__get_stop_words()])
 
     @staticmethod
-    def save_summarized(document):
+    def summarize(document):
         sentences = sent_tokenize(document)
         tokens = list({ token for sentence in sentences for token in word_tokenize(sentence) if token not in NLProcessor.__get_stop_words() })
 
@@ -32,4 +32,5 @@ class NLProcessor:
             (sentence, sum([ weighted_frequencies[word] for word in sentence.split(' ') if word in tokens ]))
         for sentence in sentences]
         sentence_scores.sort(reverse=True, key=lambda x: x[1])
-        NLProcessor.__sim_statements.append(NLProcessor.__normalize(sentence_scores[:max(2, int(len(sentences) / 20))]))
+        return [(NLProcessor.__normalize(sentence), score) for sentence, score in sentence_scores[:max(2, int(len(sentences) / 20))]]
+

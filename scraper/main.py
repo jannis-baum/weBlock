@@ -15,5 +15,8 @@ if __name__ == '__main__':
         page = urllib.request.urlopen(url)
         processor = PageProcessor(page.read().decode("utf8"))
         page.close()
-        summarization = NLProcessor.save_summarized(processor.get_fulltext())
-        Database.insert([url, summarization, topic])
+        summarization = NLProcessor.summarize(processor.get_fulltext())
+        # summarization: [(sentence: String, score: Float)]
+        # keep track of scores in database?
+        # Database.insert([url, summarization, topic])
+
