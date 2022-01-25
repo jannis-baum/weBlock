@@ -1,10 +1,8 @@
 from nltk.tokenize import word_tokenize, sent_tokenize
 
-
 class NLProcessor:
     __stop_words_path = 'stop_words_en.txt'
     __stop_words = None
-    __sim_statements = list()
 
     @staticmethod
     def __get_stop_words():
@@ -19,6 +17,7 @@ class NLProcessor:
 
     @staticmethod
     def summarize(document):
+        if not document: return []
         sentences = sent_tokenize(document)
         tokens = list({ token for sentence in sentences for token in word_tokenize(sentence) if token not in NLProcessor.__get_stop_words() })
 
@@ -32,5 +31,5 @@ class NLProcessor:
             (sentence, sum([ weighted_frequencies[word] for word in sentence.split(' ') if word in tokens ]))
         for sentence in sentences]
         sentence_scores.sort(reverse=True, key=lambda x: x[1])
-        return [(NLProcessor.__normalize(sentence), score) for sentence, score in sentence_scores[:max(2, int(len(sentences) / 20))]]
+        return [(NLProcessor.__normalize(sentence)) for sentence, _ in sentence_scores[:max(2, int(len(sentences) / 20))]]
 

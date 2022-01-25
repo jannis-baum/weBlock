@@ -1,5 +1,5 @@
 import os
-import urllib.request
+import requests
 from dotenv import load_dotenv
 from page_processor import PageProcessor
 from article_scraper import GoogleScraper
@@ -12,11 +12,8 @@ if __name__ == '__main__':
     urls = GoogleScraper.find_urls_for_query(topic)
     GoogleScraper.quit()
     for url in urls:
-        page = urllib.request.urlopen(url)
-        processor = PageProcessor(page.read().decode("utf8"))
-        page.close()
-        summarization = NLProcessor.summarize(processor.get_fulltext())
-        # summarization: [(sentence: String, score: Float)]
-        # keep track of scores in database?
-        # Database.insert([url, summarization, topic])
+        page = requests.get(url).text
+        processor = PageProcessor(page)
+        summarization = ''.joing(NLProcessor.summarize(processor.get_fulltext()))
+        Database.insert([url, summarization, topic])
 

@@ -17,7 +17,7 @@ class GoogleScraper:
 
     @staticmethod
     def quit():
-        GoogleScraper.__get_driver().__quit()
+        GoogleScraper.__get_driver().quit()
 
     @staticmethod
     def find_urls_for_query(query):
