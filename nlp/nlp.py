@@ -61,23 +61,6 @@ class NLProcessor:
         ]) if requirements else None
 
     @staticmethod
-    def save_summarized(document):
-        sentences = sent_tokenize(document)
-        tokens = list({ token for sentence in sentences for token in word_tokenize(sentence) if token not in NLProcessor.__get_stop_words() })
-
-        word_frequencies = [ (token, document.count(token)) for token in tokens ]
-        word_frequencies.sort(key=lambda x: x[1])
-        max_frequency = word_frequencies[-1][1]
-
-        weighted_frequencies = { freq[0]: freq[1] / max_frequency for freq in word_frequencies }
-
-        sentence_scores = [
-            (sentence, sum([ weighted_frequencies[word] for word in sentence.split(' ') if word in tokens ]))
-        for sentence in sentences]
-        sentence_scores.sort(reverse=True, key=lambda x: x[1])
-        NLProcessor.__sim_statements.append(NLProcessor.__normalize(sentence_scores[:max(2, int(len(sentences) / 20))]))
-    
-    @staticmethod
     def ready():
         NLProcessor.__get_stop_words()
         NLProcessor.__get_word_vectors()
@@ -93,4 +76,22 @@ class NLProcessor:
     @staticmethod
     def sentiment(phrase):
         return NLProcessor.__sentimentIA.polarity_scores(phrase)
+
+    @staticmethod
+    def summarize(document):
+        if not document: return []
+        sentences = sent_tokenize(document)
+        tokens = list({ token for sentence in sentences for token in word_tokenize(sentence) if token not in NLProcessor.__get_stop_words() })
+
+        word_frequencies = [ (token, document.count(token)) for token in tokens ]
+        word_frequencies.sort(key=lambda x: x[1])
+        max_frequency = word_frequencies[-1][1]
+
+        weighted_frequencies = { freq[0]: freq[1] / max_frequency for freq in word_frequencies }
+
+        sentence_scores = [
+            (sentence, sum([ weighted_frequencies[word] for word in sentence.split(' ') if word in tokens ]))
+        for sentence in sentences]
+        sentence_scores.sort(reverse=True, key=lambda x: x[1])
+        return [(NLProcessor.__normalize(sentence)) for sentence, _ in sentence_scores[:max(2, int(len(sentences) / 20))]]
     
