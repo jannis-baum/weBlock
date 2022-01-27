@@ -8,7 +8,6 @@ from nltk.corpus import stopwords
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_', '*'] 
-    __stop_words_path = 'stop_words_en.txt'
     __stop_words = None
     __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
@@ -19,8 +18,7 @@ class NLProcessor:
     @staticmethod
     def __get_stop_words():
         if not NLProcessor.__stop_words:
-            with open(NLProcessor.__stop_words_path, 'r') as fp:
-                NLProcessor.__stop_words = fp.read().split('\n')
+            NLProcessor.__stop_words = set(stopwords.words('english'))
         return NLProcessor.__stop_words
 
     @staticmethod
