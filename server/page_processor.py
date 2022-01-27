@@ -34,8 +34,8 @@ class PageProcessor:
     censoring_threshold = 10
 
     @staticmethod
-    def setupCensoring(censoring_requirements, censoring_statement, generator_context):
-        NLProcessor.set_similarity_data(censoring_requirements, censoring_statement)
+    def setup_censoring(censoring_requirements, censoring_statements, generator_context):
+        NLProcessor.set_similarity_data(censoring_requirements, censoring_statements)
         NLProcessor.ready()
         TextGenerator.ready(context_suffix=generator_context)
 

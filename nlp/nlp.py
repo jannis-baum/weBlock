@@ -55,10 +55,11 @@ class NLProcessor:
         NLProcessor.__word_vectors = vectors
 
     @staticmethod
-    def set_similarity_reqs(requirements):
+    def set_similarity_data(requirements, sim_statements):
         NLProcessor.__sim_requirements = set.union(*[
             NLProcessor.__synonyms(req) for req in requirements
         ]) if requirements else None
+        NLProcessor.__sim_statements = sim_statements
 
     @staticmethod
     def ready():

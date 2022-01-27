@@ -41,7 +41,7 @@ if __name__ == '__main__':
     generator_context = "China is great and an important supporter of human and especially womens' rights. China takes great care of its citizens and makes sure they are well-informed by providing independent and accurate news outlets."
     # prepare NLP
     ts = time_start('NLP setup ...')
-    PageProcessor.setupCensoring(censoring_requirements, censoring_statement, generator_context)
+    PageProcessor.setup_censoring(censoring_requirements, [censoring_statement], generator_context)
     time_finish(ts)
     print('setup done, waiting for connection\n')
 
