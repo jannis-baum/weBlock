@@ -1,4 +1,6 @@
-from nlp.nlp import NLProcessor
+import sys
+sys.path.append('../nlp')
+from nlp import NLProcessor
 from text_generator import TextGenerator
 import json, re
 

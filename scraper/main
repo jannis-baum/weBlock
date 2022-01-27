@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
+import sys
 import os
 import requests
 from dotenv import load_dotenv
 from page_processor import PageProcessor
 from article_scraper import GoogleScraper
-from database.database import Database
-from nlp.nlp import NLProcessor
+sys.path.append('../database')
+from database import Database
+sys.path.append('../nlp')
+from nlp import NLProcessor
 
 if __name__ == '__main__':
     load_dotenv()
@@ -17,6 +20,5 @@ if __name__ == '__main__':
         page = requests.get(url).text
         processor = PageProcessor(page)
         summarization = ''.join(NLProcessor.summarize(processor.get_fulltext()))
-        print(summarization)
         Database.insert([url, summarization, topic])
 
