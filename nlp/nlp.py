@@ -1,6 +1,7 @@
 from os import fpathconf
 import gensim.downloader as api
 import nltk
+nltk.download('wordnet'); nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('stopwords')
 from nltk.corpus import wordnet
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize, sent_tokenize
