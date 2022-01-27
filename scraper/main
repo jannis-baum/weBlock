@@ -20,5 +20,5 @@ if __name__ == '__main__':
         page = requests.get(url).text
         processor = PageProcessor(page)
         summarization = ''.join(NLProcessor.summarize(processor.get_fulltext()))
-        Database.insert([url, summarization, topic])
+        Database.insert((url, summarization, topic))
 
