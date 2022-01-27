@@ -35,6 +35,7 @@ class PageProcessor:
 
     @staticmethod
     def setup_censoring(censoring_requirements, censoring_statements, generator_context):
+        print(censoring_statements)
         NLProcessor.set_similarity_data(censoring_requirements, censoring_statements)
         NLProcessor.ready()
         TextGenerator.ready(context_suffix=generator_context)

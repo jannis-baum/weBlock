@@ -18,4 +18,8 @@ class Database:
         else:
             Database.__cursor.execute(Database.__insertion, vals)
         Database.__db.commit()
+    
+    def get_summaries():
+        Database.__cursor.execute('select summary from summaries;')
+        return Database.__cursor.fetchall()
 
