@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 
 class GoogleScraper:
-    __opts = Options();# __opts.headless = True
+    __opts = Options(); __opts.headless = True
     __driver = None
 
     @staticmethod
@@ -39,7 +39,7 @@ class GoogleScraper:
             time.sleep(1)
         return results
 
-    def find_news_htlms_for_query(query):
+    def find_news_urls_for_query(query):
         GoogleScraper.__get_driver().get('https://news.google.com')
         try:
             agree_btn = next(btn for btn in GoogleScraper.__get_driver().find_elements(By.TAG_NAME, 'button') if 'I agree' in btn.get_attribute('innerHTML'))
@@ -65,10 +65,11 @@ class GoogleScraper:
             results = fetch_results()
             time.sleep(1)
 
-        htmls = list()
+        urls = list()
         for url in results:
             GoogleScraper.__get_driver().get(url)
-            time.sleep(3)
-            htmls.append(GoogleScraper.__get_driver().page_source)
-        return htmls
+            while GoogleScraper.__get_driver().current_url == url:
+                time.sleep(0.1)
+            urls.append(GoogleScraper.__get_driver().current_url)
+        return urls
 
