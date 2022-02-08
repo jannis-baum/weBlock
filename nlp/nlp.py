@@ -5,6 +5,7 @@ from nltk.corpus import wordnet
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
+import re
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_', '*'] 
@@ -75,6 +76,10 @@ class NLProcessor:
     @staticmethod
     def sentiment(phrase):
         return NLProcessor.__sentimentIA.polarity_scores(phrase)
+
+    @staticmethod
+    def preprocess_article(text):
+        return re.sub('\s+', ' ', text)
 
     @staticmethod
     def summarize(document):

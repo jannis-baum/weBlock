@@ -39,7 +39,7 @@ class GoogleScraper:
             time.sleep(1)
         return results
 
-    def find_news_urls_for_query(query):
+    def find_news_urls_for_query(query, site=None):
         GoogleScraper.__get_driver().get('https://news.google.com')
         try:
             agree_btn = next(btn for btn in GoogleScraper.__get_driver().find_elements(By.TAG_NAME, 'button') if 'I agree' in btn.get_attribute('innerHTML'))
@@ -51,11 +51,14 @@ class GoogleScraper:
         action = webdriver.common.action_chains.ActionChains(GoogleScraper.__get_driver())
         action.move_to_element_with_offset(search_bar, 5, 5)
         action.click()
-        action.send_keys(query + Keys.ENTER)
+        if site:
+            action.send_keys(f'site:{site} {query}' + Keys.ENTER)
+        else:
+            action.send_keys(query + Keys.ENTER)
         action.perform()
 
         time.sleep(3)
-        fetch_results = lambda: [a_tag.get_attribute('href') for a_tag in GoogleScraper.__get_driver().find_elements(By.XPATH, '//article[@ve-visible="true"]/a')][:10]
+        fetch_results = lambda: [a_tag.get_attribute('href') for a_tag in GoogleScraper.__get_driver().find_elements(By.XPATH, '//article/a') if a_tag.is_displayed()][:10]
         results = list()
         while not results:
             results = fetch_results()
@@ -63,7 +66,7 @@ class GoogleScraper:
         while len(results_prev) < len(results):
             results_prev = results
             results = fetch_results()
-            time.sleep(1)
+            time.sleep(3)
 
         urls = list()
         for url in results:
