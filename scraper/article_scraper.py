@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 
 class GoogleScraper:
-    __opts = Options(); __opts.headless = True
+    __opts = Options();# __opts.headless = True
     __driver = None
 
     @staticmethod
@@ -51,7 +51,7 @@ class GoogleScraper:
         action = webdriver.common.action_chains.ActionChains(GoogleScraper.__get_driver())
         action.move_to_element_with_offset(search_bar, 5, 5)
         action.click()
-        action.send_keys("China censors content" + Keys.ENTER)
+        action.send_keys(query + Keys.ENTER)
         action.perform()
 
         time.sleep(3)
@@ -68,7 +68,7 @@ class GoogleScraper:
         urls = list()
         for url in results:
             GoogleScraper.__get_driver().get(url)
-            while GoogleScraper.__get_driver().current_url == url:
+            while GoogleScraper.__get_driver().current_url == url or GoogleScraper.__get_driver().current_url == 'about:blank':
                 time.sleep(0.1)
             urls.append(GoogleScraper.__get_driver().current_url)
         return urls
