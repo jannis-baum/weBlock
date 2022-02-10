@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from page_processor import PageProcessor
 from article_scraper import GoogleScraper
 sys.path.append('../database')
-from mongodb import Database
+from database import Database
 sys.path.append('../nlp')
 from nlp import NLProcessor
 

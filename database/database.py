@@ -1,25 +1,21 @@
 import os
 from dotenv import load_dotenv; load_dotenv()
-import mysql.connector
+from pymongo import MongoClient
 
 class Database:
-    __insertion = 'insert into summaries (source, summary, topic) values (%s, %s, %s)'
-    __db = mysql.connector.connect(
-        host=os.getenv('DB_HOST'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        database=os.getenv('DB_DATABASE'))
-    __cursor = __db.cursor()
+    __client = MongoClient("mongodb://localhost:27017/")
+    __db = __client["weblock"]
+    __table = __db["summaries"]
 
     @staticmethod
     def insert(vals):
-        if type(vals) is list:
-            Database.__cursor.executemany(Database.__insertion, vals)
-        else:
-            Database.__cursor.execute(Database.__insertion, vals)
-        Database.__db.commit()
-    
+        summary = {
+            'source' : vals[0],
+            'text' : vals[1],
+            'topic' : vals[2]
+        }
+        Database.__table.insert_one(summary)
+
     def get_summaries():
-        Database.__cursor.execute('select summary from summaries;')
-        return Database.__cursor.fetchall()
+        return [element['text'] for element in Database.__table.find({},{'text': 1 })]
 
