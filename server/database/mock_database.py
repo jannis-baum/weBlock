@@ -1,8 +1,8 @@
-from websockets import Data
-import yaml
+from definitions import ROOT_DIR
+import yaml, os
 
 class Database:
-    __mock_database_name = '.mock-database.yaml'
+    __mock_database_name = os.path.join(ROOT_DIR, 'database/.mock-database.yaml')
 
     @staticmethod
     def __get_data():
@@ -16,8 +16,8 @@ class Database:
     def insert(vals):
         data = Database.__get_data()
         data.append(dict(zip(['source', 'text', 'topic'], vals)))
-        with open(Data.__mock_database_name, 'w') as mock_db:
-            mock_db.write(yaml.safe_dump(data))
+        with open(Database.__mock_database_name, 'w') as mock_db:
+            yaml.dump(data, mock_db, default_flow_style=False)
     
     @staticmethod
     def get_summaries():

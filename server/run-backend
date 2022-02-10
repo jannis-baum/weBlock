@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import sys, socket, time
-from page_processor import PageProcessor
-sys.path.append('../database')
-from database import Database
+import socket, time
+from backend.page_processor import PageProcessor
+from database.database import Database
 
 def recv_full_page(conn):
     header = conn.recv(4).decode('utf-8')
