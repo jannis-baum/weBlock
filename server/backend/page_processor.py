@@ -1,5 +1,5 @@
 from nlp.nlp import NLProcessor
-from text_generator import TextGenerator
+from backend.text_generator import TextGenerator
 import json, re
 
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import socket, time
+import socket, time, argparse
 from backend.page_processor import PageProcessor
-from database.database import Database
 
 
 def recv_full_page(conn):
@@ -37,6 +36,13 @@ def time_finish(start_time, message=" done"):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="scraper")
+    parser.add_argument("-m", "--mock", action="store_true")
+    args = parser.parse_args()
+    if args.mock:
+        from database.mock_database import Database
+    else:
+        from database.database import Database
     # these words or any of their synonyms need to be in text to be considered similar to statement
     censoring_requirements = ["china", "chinese"]
     # text generation context
