@@ -9,7 +9,7 @@ import re
 
 class NLProcessor:
     __filter_chars = ['.', ',', '?', ';', '"', '#', '\'', '!', '‘', '’', '“', '”', '…', ':', '_', '*'] 
-    __stopwords = set(stopwords.word('english'))
+    __stopwords = set(stopwords.words('english'))
     __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
