@@ -19,4 +19,5 @@
 ### Biterm Topic Model
 
 - [paper](https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf)
+- [code for paper](https://github.com/xiaohuiyan/BTM)
 
