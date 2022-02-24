@@ -10,9 +10,13 @@
 
 ## Topic modelling
 
-- [LDA overview](https://highdemandskills.com/topic-modeling-intuitive/)
+- [Latent Dirichlet Allocation (LDA) overview](https://highdemandskills.com/topic-modeling-intuitive/)
 - [Dirichlet distribution explanation video](https://www.youtube.com/watch?v=gWgsKyEjclw)
 - videos that do a good job explaining LDA and Dirichlet distributions:
     - [part 1](https://www.youtube.com/watch?v=T05t-SqKArY)
     - [part 2](https://www.youtube.com/watch?v=BaM1uiCpj_E)
+
+### Biterm Topic Model
+
+- [paper](https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf)
 
