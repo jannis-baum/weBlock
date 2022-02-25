@@ -15,7 +15,7 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/%.cpp.o: %.cpp
-	mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 PHONY: clean
