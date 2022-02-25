@@ -1,3 +1,9 @@
+> # Biterm Topic Model
+> 
+> Proposed model from [paper](https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf) and [original implementation](https://github.com/xiaohuiyan/BTM) adjusted to our project.
+> 
+> **start of original readme**
+
 # Code of Biterm Topic Model
 
 Biterm Topic Model (BTM) is a word co-occurrence based topic model that learns topics by modeling word-word co-occurrences patterns (e.g., biterms).
