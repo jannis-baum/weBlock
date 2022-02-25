@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+import requests, argparse
+
+from scraper.page_processor import PageProcessor
+from scraper.article_scraper import GoogleScraper
+from nlp.nlp import NLProcessor
+
+from definitions import SEARCH_QUERY
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(prog='scraper')
+    parser.add_argument('-m', '--mock', action='store_true')
+    args = parser.parse_args()
+    if args.mock: from database.mock_database import Database
+    else: from database.database import Database
+
+    urls = GoogleScraper.find_news_urls_for_query(SEARCH_QUERY)
+    GoogleScraper.quit()
+    for url in urls:
+        page = requests.get(url).text
+        processor = PageProcessor(page)
+        summarization = ''.join(NLProcessor.summarize(processor.get_fulltext()))
+        Database.insert((url, summarization, SEARCH_QUERY))
+
