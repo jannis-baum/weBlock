@@ -21,20 +21,20 @@ echo "=============== Index Docs ============="
 dwid_pt=${output_dir}doc_wids.txt
 # vocabulary file
 voca_pt=${output_dir}voca.txt
-python indexDocs.py $doc_pt $dwid_pt $voca_pt
+python3 indexDocs.py $doc_pt $dwid_pt $voca_pt
 
 ## learning parameters p(z) and p(w|z)
 echo "=============== Topic Learning ============="
 W=`wc -l < $voca_pt` # vocabulary size
-make -C ../src
+make -C ..
 echo "../src/btm est $K $W $alpha $beta $niter $save_step $dwid_pt $model_dir"
-../src/btm est $K $W $alpha $beta $niter $save_step $dwid_pt $model_dir
+../.build/btm est $K $W $alpha $beta $niter $save_step $dwid_pt $model_dir
 
 ## infer p(z|d) for each doc
 echo "================ Infer P(z|d)==============="
 echo "../src/btm inf sum_b $K $dwid_pt $model_dir"
-../src/btm inf sum_b $K $dwid_pt $model_dir
+../.build/btm inf sum_b $K $dwid_pt $model_dir
 
 ## output top words of each topic
 echo "================ Topic Display ============="
-python topicDisplay.py $model_dir $K $voca_pt
+python3 topicDisplay.py $model_dir $K $voca_pt
