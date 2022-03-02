@@ -1,4 +1,4 @@
-# from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import string
 
 

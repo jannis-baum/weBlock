@@ -5,3 +5,4 @@ python-dotenv==0.19.2
 websockets==8.1
 selenium==4.1.0
 requests==2.26.0
+transformers
