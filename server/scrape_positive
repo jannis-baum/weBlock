@@ -7,6 +7,7 @@ from scraper.article_scraper import GoogleScraper
 
 from definitions import POSITIVE_QUERIES
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
     parser.add_argument("-m", "--mock", action="store_true")
@@ -20,11 +21,10 @@ if __name__ == "__main__":
     urls = list()
     for query in POSITIVE_QUERIES:
         urls += GoogleScraper.find_news_urls_for_query(query, args.narticles)
-    print(urls)
     GoogleScraper.quit()
-    # for url in urls:
-    #    page = requests.get(url).text
-    #    processor = PageProcessor(page)
-    #    paragraphs = processor.get_all_paragraphs()
-    #    for paragraph in paragraphs:
-    #        DatabasePositive.insert((paragraph))
+    for url in urls:
+        page = requests.get(url).text
+        processor = PageProcessor(page)
+        paragraphs = processor.get_all_paragraphs()
+        for paragraph in paragraphs:
+            DatabasePositive.insert((paragraph,))
