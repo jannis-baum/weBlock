@@ -117,32 +117,15 @@ class NLProcessor:
             if not (NLProcessor.__sim_requirements & compare_normal_set):
                 return 0
         topic_sims = [
-            (
-                1
-                / sum(
-                    [
-                        NLProcessor.__get_word_vectors().wmdistance(
-                            NLProcessor.__normal_words(phrase),
-                            NLProcessor.__normal_words(sim),
-                        )
-                        for sim in NLProcessor.__sim_statements
-                        if sim[1] == topic
-                    ]
-                )
-                / len(
-                    [
-                        statement
-                        for statement in NLProcessor.__sim_statement
-                        if statement[1] == topic
-                    ]
-                ),
-                topic,
-            )
-            for topic in NLProcessor.__sim_topics
-        ]
+            (1 / sum( [
+                    NLProcessor.__get_word_vectors().wmdistance( NLProcessor.__normal_words(phrase), NLProcessor.__normal_words(sim[0]),)
+                for sim in NLProcessor.__sim_statements if sim[1] == topic]) / len([
+                    statement
+                for statement in NLProcessor.__sim_statements if statement[1] == topic]),
+            topic)
+        for topic in NLProcessor.__sim_topics]
 
         topic_sims.sort(key=lambda x: x[0])
-        # print(f"highest similarity with texts of topic {topic_sims[-1][1]}")
         return topic_sims[-1][0]
 
     @staticmethod
