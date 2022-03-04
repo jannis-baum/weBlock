@@ -7,7 +7,7 @@ from scraper.page_processor import PageProcessor
 from scraper.article_scraper import GoogleScraper
 from nlp.nlp import NLProcessor
 
-from definitions import SEARCH_QUERIES
+from definitions import NEGATIVE_QUERIES
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     else:
         from database.database import Database
 
-    for query in SEARCH_QUERIES:
+    for query in NEGATIVE_QUERIES:
         urls = GoogleScraper.find_news_urls_for_query(query)
         for url in urls:
             page = requests.get(url).text

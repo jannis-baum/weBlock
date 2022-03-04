@@ -49,7 +49,7 @@ class NLProcessor:
         )
 
     @staticmethod
-    def normalize(text):
+    def __normalize(text):
         return ' '.join([
             NLProcessor.__ps.stem(''.join([char for char in word if char.isalnum()]))
         for word in text.split(' ') if word.lower() not in NLProcessor.__stopwords])

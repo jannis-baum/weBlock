@@ -33,7 +33,7 @@ if __name__ == "__main__":
         from nlp.nlp import NLProcessor
         from btm.train import train
         docs = [
-            NLProcessor.normalize(doc)
+            NLProcessor.__normalize(doc)
         for doc in DatabasePositive.get_sentences()]
         with open('temp_docs.txt', 'w') as fp:
             fp.write('\n'.join(docs))

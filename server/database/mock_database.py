@@ -22,8 +22,10 @@ class Database:
 
     @staticmethod
     def get_summaries():
-        return [row["text"] for row in Database.__get_data()]
+        return [(row["text"], row["topic"]) for row in Database.__get_data()]
 
+    def get_topics():
+        return list(set([row["topic"] for row in Database.__get_data()]))
 
 class DatabasePositive:
     __mock_database_name = os.path.join(
