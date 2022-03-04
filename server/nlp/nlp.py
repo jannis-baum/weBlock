@@ -49,7 +49,7 @@ class NLProcessor:
         )
 
     @staticmethod
-    def __normalize(text):
+    def normalize(text):
         return ' '.join([
             NLProcessor.__ps.stem(''.join([char for char in word if char.isalnum()]))
         for word in text.split(' ') if word.lower() not in NLProcessor.__stopwords])
@@ -147,7 +147,7 @@ class NLProcessor:
         ]
         sentence_scores.sort(reverse=True, key=lambda x: x[1])
         return [
-            (NLProcessor.__normalize(sentence))
+            (NLProcessor.normalize(sentence))
             for sentence, _ in sentence_scores[: max(2, int(len(sentences) / 20))]
         ]
 
