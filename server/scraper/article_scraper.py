@@ -8,7 +8,7 @@ import time
 
 class GoogleScraper:
     __opts = Options()
-    # __opts.headless = True
+    __opts.headless = True
     __driver = None
 
     @staticmethod
@@ -111,3 +111,4 @@ class GoogleScraper:
                 time.sleep(0.1)
             urls.append(GoogleScraper.__get_driver().current_url)
         return urls
+

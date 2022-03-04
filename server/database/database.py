@@ -12,8 +12,10 @@ class Database:
         Database.__table.insert_one(summary)
 
     def get_summaries():
-        return [element["text"] for element in Database.__table.find({}, {"text": 1})]
+        return [(element["text"], element["topic"]) for element in Database.__table.find({}, {"text": 1})]
 
+    def get_topics():
+        return list(set([element["topic"] for element in Database.__table.find({}, {"text": 1})]))
 
 class DatabasePositive:
     __client = MongoClient("mongodb://locahost:27017/")
@@ -30,3 +32,4 @@ class DatabasePositive:
             element["paragraph"]
             for element in DatabasePositive.__table.find({}, {"paragraph": 1})
         ]
+
