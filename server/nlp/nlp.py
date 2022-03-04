@@ -9,30 +9,14 @@ from nltk.corpus import wordnet
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 import re
 
 
 class NLProcessor:
-    __filter_chars = [
-        ".",
-        ",",
-        "?",
-        ";",
-        '"',
-        "#",
-        "'",
-        "!",
-        "‘",
-        "’",
-        "“",
-        "”",
-        "…",
-        ":",
-        "_",
-        "*",
-    ]
-    __stopwords = set(stopwords.words("english"))
-    __word_vectors_id = "word2vec-google-news-300"
+    __stopwords = set(stopwords.words('english'))
+    __ps = PorterStemmer()
+    __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
     __sim_statements = list()
@@ -48,13 +32,7 @@ class NLProcessor:
     def __normal_set(words):
         normal = set()
         for word in [word.lower() for word in words]:
-            normal_word = "".join(
-                [
-                    character
-                    for character in word
-                    if character not in NLProcessor.__filter_chars
-                ]
-            )
+            normal_word = ''.join([character for character in word if character.isalnum()])
             normal.add(normal_word)
         return normal
 
@@ -71,14 +49,10 @@ class NLProcessor:
         )
 
     @staticmethod
-    def __normalize(text):
-        return " ".join(
-            [
-                word.lower()
-                for word in text.split(" ")
-                if word not in NLProcessor.__stopwords
-            ]
-        )
+    def normalize(text):
+        return ' '.join([
+            NLProcessor.__ps.stem(''.join([char for char in word if char.isalnum()]))
+        for word in text.split(' ') if word.lower() not in NLProcessor.__stopwords])
 
     @staticmethod
     def __normal_words(text):
@@ -176,3 +150,4 @@ class NLProcessor:
             (NLProcessor.__normalize(sentence))
             for sentence, _ in sentence_scores[: max(2, int(len(sentences) / 20))]
         ]
+

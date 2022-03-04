@@ -12,14 +12,22 @@ class Database:
         Database.__table.insert_one(summary)
 
     def get_summaries():
+        return [element["text"] for element in Database.__table.find({}, {"text": 1})]
+
+
+class DatabasePositive:
+    __client = MongoClient("mongodb://locahost:27017/")
+    __db = __client["weblock"]
+    __table = __db["positive_sentences"]
+
+    @staticmethod
+    def insert(value):
+        row = {"paragraph": value}
+        DatabasePositive.__table.insert_one(row)
+
+    def get_sentences():
         return [
-            (element["text"], element["topic"])
-            for element in Database.__table.find({}, {"text": 1})
+            element["paragraph"]
+            for element in DatabasePositive.__table.find({}, {"paragraph": 1})
         ]
 
-    def get_topics():
-        return list(
-            set(
-                [element["topic"] for element in Database.__table.find({}, {"text": 1})]
-            )
-        )

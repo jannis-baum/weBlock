@@ -1,0 +1,3 @@
+[submodule "server/btm"]
+	path = server/btm
+	url = https://github.com/jannis-baum/biterm-topic-model.git

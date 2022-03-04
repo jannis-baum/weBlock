@@ -54,7 +54,7 @@ class GoogleScraper:
             time.sleep(1)
         return results
 
-    def find_news_urls_for_query(query, site=None):
+    def find_news_urls_for_query(query, n_articles=10, site=None):
         GoogleScraper.__get_driver().get("https://news.google.com")
         try:
             agree_btn = next(
@@ -78,7 +78,7 @@ class GoogleScraper:
         action.move_to_element_with_offset(search_bar, 5, 5)
         action.click()
         if site:
-            action.send_keys(f"site:{site} {query}" + Keys.ENTER)
+            action.send_keys(f"{query} site:{site}" + Keys.ENTER)
         else:
             action.send_keys(query + Keys.ENTER)
         action.perform()
@@ -90,7 +90,8 @@ class GoogleScraper:
                 By.XPATH, "//article/a"
             )
             if a_tag.is_displayed()
-        ][:10]
+        ][:n_articles]
+
         results = list()
         while not results:
             results = fetch_results()
@@ -110,3 +111,4 @@ class GoogleScraper:
                 time.sleep(0.1)
             urls.append(GoogleScraper.__get_driver().current_url)
         return urls
+

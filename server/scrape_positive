@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import requests, argparse
+
+from scraper.page_processor import PageProcessor
+from scraper.article_scraper import GoogleScraper
+
+from definitions import *
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="scraper")
+    parser.add_argument("-m", "--mock", action="store_true")
+    parser.add_argument("-n", "--narticles", type=int, action="store", default=0)
+    parser.add_argument("-t", "--train", action="store_true")
+    args = parser.parse_args()
+    if args.mock:
+        from database.mock_database import DatabasePositive
+    else:
+        from database.database import DatabasePositive
+
+    urls = list()
+    for query in POSITIVE_QUERIES:
+        urls += GoogleScraper.find_news_urls_for_query(query, args.narticles)
+    GoogleScraper.quit()
+    for url in urls:
+        page = requests.get(url).text
+        processor = PageProcessor(page)
+        paragraphs = processor.get_all_paragraphs()
+        for paragraph in paragraphs:
+            DatabasePositive.insert((paragraph,))
+
+    if args.train:
+        from nlp.nlp import NLProcessor
+        from btm.train import train
+        docs = [
+            NLProcessor.normalize(doc)
+        for doc in DatabasePositive.get_sentences()]
+        with open('temp_docs.txt', 'w') as fp:
+            fp.write('\n'.join(docs))
+        train('temp_docs.txt', '.btm_model', TRAINING_TOPICS, TRAINING_ALPHA, TRAINING_BETA, TRAINING_ITERATIONS, TRAINING_SAVE_STEPS)
+        
