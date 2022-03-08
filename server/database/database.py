@@ -13,11 +13,11 @@ class Database:
 
     @staticmethod
     def get_summaries():
-        return [(element["text"], element["topic"]) for element in Database.__table.find({}, {"text": 1})]
+        return [(element["text"], element["topic"]) for element in Database.__table.find({}, {"text": 1, "topic": 1})]
 
     @staticmethod
     def get_topics():
-        return list(set([element["topic"] for element in Database.__table.find({}, {"text": 1})]))
+        return list(set([element["topic"] for element in Database.__table.find({}, {"topic": 1})]))
 
 class DatabasePositive:
     __client = MongoClient("mongodb://localhost:27017/")
