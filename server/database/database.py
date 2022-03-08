@@ -18,7 +18,7 @@ class Database:
         return list(set([element["topic"] for element in Database.__table.find({}, {"text": 1})]))
 
 class DatabasePositive:
-    __client = MongoClient("mongodb://locahost:27017/")
+    __client = MongoClient("mongodb://localhost:27017/")
     __db = __client["weblock"]
     __table = __db["positive_sentences"]
 
