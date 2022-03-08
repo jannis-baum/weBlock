@@ -24,6 +24,7 @@ class Database:
     def get_summaries():
         return [(row["text"], row["topic"]) for row in Database.__get_data()]
 
+    @staticmethod
     def get_topics():
         return list(set([row["topic"] for row in Database.__get_data()]))
 
