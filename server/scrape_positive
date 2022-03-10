@@ -5,6 +5,8 @@ import requests, argparse
 from scraper.page_processor import PageProcessor
 from scraper.article_scraper import GoogleScraper
 
+from btm.script.infer import BTMInferrer
+
 from definitions import *
 
 if __name__ == "__main__":
@@ -27,7 +29,7 @@ if __name__ == "__main__":
         processor = PageProcessor(page)
         paragraphs = processor.get_all_paragraphs()
         for paragraph in paragraphs:
-            DatabasePositive.insert(paragraph)
+            DatabasePositive.insert_paragraph(paragraph)
 
     if args.train:
         from nlp.nlp import NLProcessor
@@ -39,4 +41,12 @@ if __name__ == "__main__":
             fp.write('\n'.join(docs))
         train('.temp_docs.txt', '.btm_model', TRAINING_TOPICS, TRAINING_ALPHA, TRAINING_BETA, TRAINING_ITERATIONS, TRAINING_SAVE_STEPS)
         os.remove('.temp_docs.txt')
-        
+
+    inf = BTMInferrer('.btm_model')
+    print('INFERRING PARAGRAPHS')
+    paragraphs = DatabasePositive.get_sentences()
+    for n, paragraph in enumerate(paragraphs):
+        print(f'\rINFERRING {n+1}/{len(paragraphs)}', end='')
+        DatabasePositive.insert_vector(inf.infer(NLProcessor.normalize(paragraph)))
+    print('\ndone!')
+
