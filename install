@@ -40,6 +40,7 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
 
     print_bold "installing modules"
     $PY -m pip install -r $ROOT_DIR/server/requirements.txt
+    $PY -m pip install -r $ROOT_DIR/server/btm/script/requirements.txt
 
     print_bold "downloading nltk resources"
     read -r -d '' NLTK_DOWNLOAD <<- EOM
@@ -48,6 +49,7 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
         nltk.download('vader_lexicon', download_dir='$VENV_DIR/nltk_data');
         nltk.download('punkt',         download_dir='$VENV_DIR/nltk_data');
         nltk.download('stopwords',     download_dir='$VENV_DIR/nltk_data');
+        nltk.download('omw-1.4',       download_dir='$VENV_DIR/nltk_data');
 EOM
     $PY -c "$(echo $NLTK_DOWNLOAD)"
 
