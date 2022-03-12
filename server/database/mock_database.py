@@ -15,18 +15,18 @@ class DatabaseNegative:
 
     @staticmethod
     def insert(vals):
-        data = Database.__get_data()
+        data = DatabaseNegative.__get_data()
         data.append(dict(zip(["source", "text", "topic"], vals)))
         with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
             yaml.dump(data, mock_db, default_flow_style=False)
 
     @staticmethod
     def get_summaries():
-        return [(row["text"], row["topic"]) for row in Database.__get_data()]
+        return [(row["text"], row["topic"]) for row in DatabaseNegative.__get_data()]
 
     @staticmethod
     def get_topics():
-        return list(set([row["topic"] for row in Database.__get_data()]))
+        return list(set([row["topic"] for row in DatabaseNegative.__get_data()]))
 
 class DatabasePositive:
     @staticmethod
