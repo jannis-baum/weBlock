@@ -56,6 +56,12 @@ class DatabasePositive:
         DatabasePositive.__write_data(data)
 
     @staticmethod
+    def clear_vectors():
+        data = DatabasePositive.__get_data()
+        data["vectors"] = list()
+        DatabasePositive.__write_data(data)
+
+    @staticmethod
     def get_topic_matrix():
         return [vector for vector in DatabasePositive.__get_data()["vectors"]]
 
