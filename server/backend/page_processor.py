@@ -46,6 +46,7 @@ class PageProcessor:
             censoring_requirements, censoring_statements, censoring_topics
         )
         NLProcessor.ready()
+        PageProcessor.__text_matcher = TextMatcher()
 
     def __init__(self, request):
         data = json.loads(request)
@@ -68,7 +69,7 @@ class PageProcessor:
         for element in elements_flat:
             if element.score() >= PageProcessor.censoring_threshold:
                 if self.should_replace:
-                    element.text = TextMatcher.match(NLProcessor.normalize(element.text))
+                    element.text = PageProcessor.__text_matcher.find_matching(NLProcessor.normalize(element.text))
                 element.html = (
                     '<div style="color: red !important;">' + element.text + "</div>"
                 )
