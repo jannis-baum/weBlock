@@ -39,7 +39,7 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
     source $VENV_DIR/bin/activate
 
     print_bold "installing modules"
-    $PY -m pip install -r server/requirements.txt
+    $PY -m pip install -r $ROOT_DIR/server/requirements.txt
 
     print_bold "downloading nltk resources"
     read -r -d '' NLTK_DOWNLOAD <<- EOM
