@@ -1,5 +1,5 @@
 from nlp.nlp import NLProcessor
-from backend.text_generator import TextGenerator
+from backend.text_matcher import TextMatcher
 import json, re
 
 
@@ -41,21 +41,15 @@ class PageProcessor:
     censoring_threshold = 10
 
     @staticmethod
-    def setup_censoring(
-        censoring_requirements,
-        censoring_statements,
-        censoring_topics,
-        generator_context,
-    ):
+    def setup_censoring(censoring_requirements, censoring_statements, censoring_topics):
         NLProcessor.set_similarity_data(
             censoring_requirements, censoring_statements, censoring_topics
         )
         NLProcessor.ready()
-        TextGenerator.ready(context_suffix=generator_context)
 
     def __init__(self, request):
         data = json.loads(request)
-        self.should_generate = data["gen_text"]
+        self.should_replace = data["replace_text"]
         self.__text_groups = dict()
         for tag, innerHTMLs in data["page"].items():
             self.__text_groups[tag] = list()
@@ -73,12 +67,8 @@ class PageProcessor:
         ]
         for element in elements_flat:
             if element.score() >= PageProcessor.censoring_threshold:
-                if self.should_generate:
-                    element.text = TextGenerator.generate(
-                        element.context_elements[-1].text
-                        if element.context_elements
-                        else ""
-                    )
+                if self.should_replace:
+                    element.text = TextMatcher.match(NLProcessor.normalize(element.text))
                 element.html = (
                     '<div style="color: red !important;">' + element.text + "</div>"
                 )
