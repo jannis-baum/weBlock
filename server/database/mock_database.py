@@ -42,6 +42,9 @@ class DatabasePositive:
     def __write_data(data):
         with open(DATABASE_POSITIVE_PATH, "w") as mock_db:
             yaml.dump(data, mock_db, default_flow_style=False)
+
+    def count_paragraphs():
+        return len(DatabasePositive.__get_data()["paragraphs"])
         
     @staticmethod
     def insert_paragraph(paragraph):
@@ -50,9 +53,9 @@ class DatabasePositive:
         DatabasePositive.__write_data(data)
 
     @staticmethod
-    def insert_vector(vector):
+    def insert_vectors(vectors):
         data = DatabasePositive.__get_data()
-        data["vectors"].append(vector)
+        data["vectors"] += vectors
         DatabasePositive.__write_data(data)
 
     @staticmethod
