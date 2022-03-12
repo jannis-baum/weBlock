@@ -3,8 +3,6 @@ import yaml, os
 
 
 class DatabaseNegative:
-    DATABASE_NEGATIVE_PATH = os.path.join(ROOT_DIR, "database/.mock-database.yaml")
-
     @staticmethod
     def __get_data():
         try:
