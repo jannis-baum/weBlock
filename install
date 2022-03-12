@@ -34,7 +34,7 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
     make -C $ROOT_DIR/server/btm
 
     print_bold "initializing python environment"
-    cp $ROOT_DIR/server/.env.example $ROOT_DIR/server/.env
+    test -f $ROOT_DIR/server/.env || cp $ROOT_DIR/server/.env.example $ROOT_DIR/server/.env
     $PY -m venv $VENV_DIR
     source $VENV_DIR/bin/activate
 
