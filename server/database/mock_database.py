@@ -60,9 +60,6 @@ class DatabasePositive:
         return [vector for vector in DatabasePositive.__get_data()["vectors"]]
 
     @staticmethod
-    def get_sentences():
+    def get_paragraphs():
         return [paragraph for paragraph in DatabasePositive.__get_data()["paragraphs"]]
-
-    def get_sentence(idx):
-        return DatabasePositive.__get_data()["paragraphs"][idx]
 

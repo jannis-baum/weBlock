@@ -9,7 +9,7 @@ class TextMatcher:
     def __init__(self):
         self.__inferrer = BTMInferrer(TOPIC_MODEL_PATH)
         self.__topic_matrix = np.array(DatabasePositive.get_topic_matrix())
-        self.__paragraphs = DatabasePositive.get_sentences()
+        self.__paragraphs = DatabasePositive.get_paragraphs()
 
     def find_matching(self, document):
         topic_vector = np.array(self.__inferrer.infer(document))

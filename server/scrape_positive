@@ -28,7 +28,7 @@ def train():
     from btm.script.train import train
     docs = [
         NLProcessor.normalize(doc)
-    for doc in DatabasePositive.get_sentences()]
+    for doc in DatabasePositive.get_paragraphs()]
     with open('.temp_docs.txt', 'w') as fp:
         fp.write('\n'.join(docs))
     train('.temp_docs.txt', TOPIC_MODEL_PATH, TRAINING_TOPICS, TRAINING_ALPHA, TRAINING_BETA, TRAINING_ITERATIONS, TRAINING_SAVE_STEPS)
@@ -47,7 +47,7 @@ def main(n_articles, train):
         scrape()
 
     print('INFERRING PARAGRAPHS')
-    paragraphs = DatabasePositive.get_sentences()
+    paragraphs = DatabasePositive.get_paragraphs()
     for n, paragraph in enumerate(paragraphs):
         print(f'\rINFERRING {n+1}/{len(paragraphs)}', end='')
         DatabasePositive.insert_vector(inf.infer(NLProcessor.normalize(paragraph)))
