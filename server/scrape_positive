@@ -39,10 +39,10 @@ if __name__ == "__main__":
         for doc in DatabasePositive.get_sentences()]
         with open('.temp_docs.txt', 'w') as fp:
             fp.write('\n'.join(docs))
-        train('.temp_docs.txt', '.btm_model', TRAINING_TOPICS, TRAINING_ALPHA, TRAINING_BETA, TRAINING_ITERATIONS, TRAINING_SAVE_STEPS)
+        train('.temp_docs.txt', TOPIC_MODEL_PATH, TRAINING_TOPICS, TRAINING_ALPHA, TRAINING_BETA, TRAINING_ITERATIONS, TRAINING_SAVE_STEPS)
         os.remove('.temp_docs.txt')
 
-    inf = BTMInferrer('.btm_model')
+    inf = BTMInferrer(TOPIC_MODEL_PATH)
     print('INFERRING PARAGRAPHS')
     paragraphs = DatabasePositive.get_sentences()
     for n, paragraph in enumerate(paragraphs):
