@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+DATABASE_POSITIVE_PATH = os.path.join(ROOT_DIR, 'database', '.mock-positive.yaml')
+DATABASE_NEGATIVE_PATH = os.path.join(ROOT_DIR, 'database', '.mock-negative.yaml')
+
 SEARCH_QUERY = os.getenv("SEARCH_QUERY")
 POSITIVE_QUERIES = os.getenv("POSITIVE_QUERIES").split(", ")
 NEGATIVE_QUERIES = os.getenv("NEGATIVE_QUERIES").split(", ")

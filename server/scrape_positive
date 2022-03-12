@@ -11,14 +11,10 @@ from definitions import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
-    parser.add_argument("-m", "--mock", action="store_true")
     parser.add_argument("-n", "--narticles", type=int, action="store", default=0)
     parser.add_argument("-t", "--train", action="store_true")
     args = parser.parse_args()
-    if args.mock:
-        from database.mock_database import DatabasePositive
-    else:
-        from database.database import DatabasePositive
+    from database.mock_database import DatabasePositive
 
     urls = list()
     for query in POSITIVE_QUERIES:

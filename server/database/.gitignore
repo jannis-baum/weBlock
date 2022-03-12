@@ -1,2 +1,2 @@
-.mock-database.yaml
-.mock-database-positive.yaml
+.mock-negative.yaml
+.mock-positive.yaml
