@@ -37,23 +37,16 @@ def time_finish(start_time, message=" done"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
-    parser.add_argument("-m", "--mock", action="store_true")
     args = parser.parse_args()
-    if args.mock:
-        from database.mock_database import Database
-    else:
-        from database.database import Database
+    from database.mock_database import DatabaseNegative
     # these words or any of their synonyms need to be in text to be considered similar to statement
     censoring_requirements = ["china", "chinese"]
-    # text generation context
-    generator_context = "China is great and an important supporter of human and especially womens' rights. China takes great care of its citizens and makes sure they are well-informed by providing independent and accurate news outlets."
     # prepare NLP
     ts = time_start("NLP setup ...")
     PageProcessor.setup_censoring(
         censoring_requirements,
-        Database.get_summaries(),
-        Database.get_topics(),
-        generator_context,
+        DatabaseNegative.get_summaries(),
+        DatabaseNegative.get_topics(),
     )
     time_finish(ts)
     print("setup done, waiting for connection\n")

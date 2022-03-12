@@ -15,7 +15,7 @@ function edit_page(data) {
     }
 }
 
-function censor_page(generate_text = false) {
+function censor_page(replace_text = false) {
     guardian_block_ads();
     const relevant_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'];
     function sendstring() {
@@ -28,7 +28,7 @@ function censor_page(generate_text = false) {
             }
             page[tag] = list;
         }
-        return JSON.stringify({ gen_text: generate_text, page: page });
+        return JSON.stringify({ replace_text: replace_text, page: page });
     }
 
     document.documentElement.hidden = true;

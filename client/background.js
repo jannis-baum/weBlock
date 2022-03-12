@@ -1,5 +1,5 @@
 const TITLE_CENSOR = 'censor'
-const TITLE_GENERATE = 'generate'
+const TITLE_REPLACE = 'replace'
 
 function initializePageAction(tab) {
     function protocolIsApplicable(url) {
@@ -20,7 +20,7 @@ browser.tabs.onUpdated.addListener((id, changeInfo, tab) => initializePageAction
 browser.pageAction.onClicked.addListener((tab) => {
     browser.pageAction.getTitle({tabId: tab.id}).then((title) => {
         if (title == TITLE_CENSOR) {
-            browser.pageAction.setTitle({tabId: tab.id, title: TITLE_GENERATE});
+            browser.pageAction.setTitle({tabId: tab.id, title: TITLE_REPLACE});
             browser.tabs.executeScript(tab.id, { file: 'censor.js'})
         }
         else {
