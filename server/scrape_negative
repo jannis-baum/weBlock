@@ -10,15 +10,15 @@ from definitions import NEGATIVE_QUERIES
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
+    parser.add_argument("-n", "--narticles", type=int, action="store", default=0)
     args = parser.parse_args()
     from database.mock_database import DatabaseNegative
 
     for query in NEGATIVE_QUERIES:
-        urls = GoogleScraper.find_news_urls_for_query(query)
+        urls = GoogleScraper.find_news_urls_for_query(query, args.narticles)
         for url in urls:
             page = requests.get(url).text
             processor = PageProcessor(page)
             summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
             DatabaseNegative.insert((url, summarization, query))
     GoogleScraper.quit()
-
