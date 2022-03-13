@@ -15,10 +15,14 @@ if __name__ == "__main__":
     from database.mock_database import DatabaseNegative
 
     for query in NEGATIVE_QUERIES:
+        print("scraping for query [{}]".format(query))
         urls = GoogleScraper.find_news_urls_for_query(query, args.narticles)
+        print("scraped {} urls for query".format(len(urls)))
         for url in urls:
+            print("requesting url [{}]".format(url))
             page = requests.get(url).text
             processor = PageProcessor(page)
             summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
             DatabaseNegative.insert((url, summarization, query))
+    print("DONE")
     GoogleScraper.quit()
