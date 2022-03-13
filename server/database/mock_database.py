@@ -23,8 +23,13 @@ class DatabaseNegative:
         return [(row["text"], row["topic"]) for row in DatabaseNegative.__get_data()]
 
     @staticmethod
+    def get_urls():
+        return list(set([row["source"] for row in DatabaseNegative.__get_data()]))
+
+    @staticmethod
     def get_topics():
         return list(set([row["topic"] for row in DatabaseNegative.__get_data()]))
+
 
 class DatabasePositive:
     @staticmethod
@@ -33,10 +38,7 @@ class DatabasePositive:
             with open(DATABASE_POSITIVE_PATH, "r") as mock_db:
                 return yaml.safe_load(mock_db.read())
         except:
-            return {
-                "paragraphs": list(),
-                "vectors": list()
-            }
+            return {"paragraphs": list(), "vectors": list()}
 
     @staticmethod
     def __write_data(data):
@@ -45,7 +47,7 @@ class DatabasePositive:
 
     def count_paragraphs():
         return len(DatabasePositive.__get_data()["paragraphs"])
-        
+
     @staticmethod
     def insert_paragraph(paragraph):
         data = DatabasePositive.__get_data()
@@ -71,4 +73,3 @@ class DatabasePositive:
     @staticmethod
     def get_paragraphs():
         return [paragraph for paragraph in DatabasePositive.__get_data()["paragraphs"]]
-

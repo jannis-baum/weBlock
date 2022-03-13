@@ -2,6 +2,8 @@
 
 import requests, argparse
 
+from websockets import Data
+
 from scraper.page_processor import PageProcessor
 from scraper.article_scraper import GoogleScraper
 from nlp.nlp import NLProcessor
@@ -13,12 +15,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
     from database.mock_database import DatabaseNegative
 
+    summarized_urls = DatabaseNegative.get_urls()
     for query in NEGATIVE_QUERIES:
-        urls = GoogleScraper.find_news_urls_for_query(query)
+        urls = list(
+            set(GoogleScraper.find_news_urls_for_query(query)) - set(summarized_urls)
+        )
+        summarized_urls += urls
         for url in urls:
             page = requests.get(url).text
             processor = PageProcessor(page)
             summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
             DatabaseNegative.insert((url, summarization, query))
     GoogleScraper.quit()
-
