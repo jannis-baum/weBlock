@@ -51,6 +51,8 @@ def scrape():
         processor = PageProcessor(page)
         paragraphs = processor.get_all_paragraphs()
         for paragraph in paragraphs:
+            if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
+                continue
             DatabasePositive.insert_paragraph(paragraph)
     print("DONE")
 
