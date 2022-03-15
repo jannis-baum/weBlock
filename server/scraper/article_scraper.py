@@ -111,4 +111,3 @@ class GoogleScraper:
                 time.sleep(0.1)
             urls.append(GoogleScraper.__get_driver().current_url)
         return urls
-

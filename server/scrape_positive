@@ -113,4 +113,9 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--train", action="store_true")
     args = parser.parse_args()
 
+    if args.narticles <= 0:
+        print(
+            "Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting"
+        )
+        sys.exit(1)
     main(args.narticles, train)
