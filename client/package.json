@@ -1,0 +1,9 @@
+{
+  "license": "MIT",
+  "scripts": {
+    "start": "web-ext run"
+  },
+  "dependencies": {
+    "web-ext": "^6.7.0"
+  }
+}
