@@ -1,6 +1,6 @@
 // ad-block
 function guardian_block_ads() {
-    for (ad of document.querySelectorAll("div[class*='ad-container'], div[class*='ad-slot']")) {
+    for (ad of document.querySelectorAll("div[class*='ad-'], div[class*='ads-'], div[class='GoogleActiveViewElement'],  div[class*='-ad']")) {
         ad.parentNode.removeChild(ad);
     }
 }
@@ -34,7 +34,7 @@ function censor_page(replace_text = false) {
     document.documentElement.hidden = true;
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", 'http://saltleague.net:6969');
+    xhr.open("POST", 'http://localhost:6969');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             data = JSON.parse(xhr.responseText);
