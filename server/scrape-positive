@@ -50,7 +50,6 @@ def train():
     return indexed_docs_path
 
 def main(n_articles, train):
-    validate_venv()
     if train:
         DatabasePositive.clear_vectors()
         scrape()
