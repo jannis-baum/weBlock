@@ -1,3 +1,5 @@
+let original_page;
+
 // ad-block
 function guardian_block_ads() {
     for (ad of document.querySelectorAll("div[class*='ad-'], div[class*='ads-'], div[class='GoogleActiveViewElement'],  div[class*='-ad']")) {
@@ -49,9 +51,6 @@ async function censor_page(replace_text = false) {
     const s = sendstring();
     xhr.send(s);
     //
-    return JSON.parse(s).page;
+    original_page = JSON.parse(s).page;
 }
-
-//
-const original_page = censor_page();
 
