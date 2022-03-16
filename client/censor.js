@@ -1,4 +1,3 @@
-var serverURL;
 // ad-block
 function guardian_block_ads() {
     for (ad of document.querySelectorAll("div[class*='ad-'], div[class*='ads-'], div[class='GoogleActiveViewElement'],  div[class*='-ad']")) {
