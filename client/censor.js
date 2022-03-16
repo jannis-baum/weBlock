@@ -34,9 +34,9 @@ async function censor_page(replace_text = false) {
 
     document.documentElement.hidden = true;
 
-    let getting = await browser.storage.local.get("serverUrl");
+    let result = await browser.storage.local.get("serverUrl");
     const xhr = new XMLHttpRequest();
-    let host = getting.serverUrl || "localhost"
+    let host = result.serverUrl || "localhost"
     xhr.open("POST", "http://" + host + ":6969");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
