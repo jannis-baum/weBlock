@@ -15,7 +15,7 @@ if [ $# -gt 1 ]; then
 fi
 
 ROOT_DIR=`dirname $(realpath $0)`
-VENV_DIR=$ROOT_DIR/server/venv
+VENV_DIR=$ROOT_DIR/server/.venv
 
 function print_bold() {
     echo -e "\\033[1m$1\\033[0m"
