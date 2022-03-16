@@ -1,3 +1,4 @@
+var serverURL;
 // ad-block
 function guardian_block_ads() {
     for (ad of document.querySelectorAll("div[class*='ad-'], div[class*='ads-'], div[class='GoogleActiveViewElement'],  div[class*='-ad']")) {
@@ -15,9 +16,10 @@ function edit_page(data) {
     }
 }
 
-function censor_page(replace_text = false) {
+async function censor_page(replace_text = false) {
     guardian_block_ads();
     const relevant_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'];
+
     function sendstring() {
         var page = {};
         for (tag of relevant_tags) {
@@ -28,13 +30,15 @@ function censor_page(replace_text = false) {
             }
             page[tag] = list;
         }
-        return JSON.stringify({ replace_text: replace_text, page: page });
+        return JSON.stringify({replace_text: replace_text, page: page});
     }
 
     document.documentElement.hidden = true;
 
+    let getting = await browser.storage.local.get("serverUrl");
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", 'http://localhost:6969');
+    let host = getting.serverUrl || "localhost"
+    xhr.open("POST", "http://" + host + ":6969");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             data = JSON.parse(xhr.responseText);
