@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "WeBlock!",
+    "name": "weBlock!",
     "version": "1.0",
     "description": "the ram- and cpu-lightest adblocker around ;) 10/10 on heise",
     "icons": {"144": "icons/weblock.png"},
@@ -11,7 +11,7 @@
     },
     "browser_action": {
         "default_icon": {"144": "icons/weblock.png"},
-        "default_title": "WeBlock!",
+        "default_title": "weBlock!",
         "default_popup": "settings.html"
     },
     "permissions": [
