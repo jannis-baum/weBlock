@@ -44,6 +44,7 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
     print_bold "initializing python environment"
     test -f $ROOT_DIR/server/.env || cp $ROOT_DIR/server/.env.example $ROOT_DIR/server/.env
     $PY -m venv --prompt 'weBlock-server' $VENV_DIR
+    source $VENV_DIR/bin/activate
     source $ROOT_DIR/server/activate
 
     print_bold "installing modules"
