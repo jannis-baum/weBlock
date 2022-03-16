@@ -6,3 +6,4 @@
 venv/
 .btm_model
 .temp
+.vscode

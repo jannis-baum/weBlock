@@ -56,6 +56,7 @@ class GoogleScraper:
 
     def find_news_urls_for_query(query, n_articles=10, site=None):
         GoogleScraper.__get_driver().get("https://news.google.com")
+        print("GoogleScraper: received news.google.com page")
         try:
             agree_btn = next(
                 btn
@@ -65,13 +66,13 @@ class GoogleScraper:
                 if "I agree" in btn.get_attribute("innerHTML")
             )
             agree_btn.click()
+            print("GoogleScraper: agreed to google's data collection")
         except:
             pass
 
         search_bar = GoogleScraper.__get_driver().find_element(
             By.XPATH, '//input[@value="Search for topics, locations & sources"]'
         )
-
         action = webdriver.common.action_chains.ActionChains(
             GoogleScraper.__get_driver()
         )
@@ -82,6 +83,7 @@ class GoogleScraper:
         else:
             action.send_keys(query + Keys.ENTER)
         action.perform()
+        print("GoogleScraper: executed search, fetching results now")
 
         time.sleep(3)
         fetch_results = lambda: [
@@ -100,6 +102,7 @@ class GoogleScraper:
             results_prev = results
             results = fetch_results()
             time.sleep(3)
+        print("GoogleScraper: results fetched")
 
         urls = list()
         for url in results:
@@ -110,4 +113,5 @@ class GoogleScraper:
             ):
                 time.sleep(0.1)
             urls.append(GoogleScraper.__get_driver().current_url)
+        print("GoogleScraper: news urls extracted")
         return urls
