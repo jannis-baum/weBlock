@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # requirements server:
 # - Python 3 (tested in 3.9.10)
@@ -18,7 +18,7 @@ ROOT_DIR=`dirname $(realpath $0)`
 VENV_DIR=$ROOT_DIR/server/venv
 
 function print_bold() {
-    echo "\\033[1m$1\\033[0m"
+    echo -e "\\033[1m$1\\033[0m"
 }
 
 print_bold "initializing git submodules"
