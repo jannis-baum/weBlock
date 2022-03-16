@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import requests, argparse
+import requests, argparse, sys
 
 from scraper.page_processor import PageProcessor
 from scraper.article_scraper import GoogleScraper
@@ -12,17 +12,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
     parser.add_argument("-n", "--narticles", type=int, action="store", default=0)
     args = parser.parse_args()
+    if args.narticles <= 0:
+        print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
+        sys.exit(1)
+    if len(NEGATIVE_QUERIES) == 0:
+        print("No negative queries have been supplied in .env\nExiting")
+        sys.exit(1)
     from database.mock_database import DatabaseNegative
 
     for query in NEGATIVE_QUERIES:
-        print("scraping for query [{}]".format(query))
+        print(f"scraping for query [{query}]")
         urls = GoogleScraper.find_news_urls_for_query(query, args.narticles)
-        print("scraped {} urls for query".format(len(urls)))
+        print(f"scraped {len(urls)} urls for query")
         for url in urls:
-            print("requesting url [{}]".format(url))
+            print(f"\r\033[Krequesting url [{url}]", end="")
             page = requests.get(url).text
             processor = PageProcessor(page)
             summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
             DatabaseNegative.insert((url, summarization, query))
-    print("DONE")
+    print("\nDONE")
     GoogleScraper.quit()

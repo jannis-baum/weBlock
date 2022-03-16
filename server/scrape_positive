@@ -41,12 +41,12 @@ def save_temp_inferred():
 def scrape():
     urls = list()
     for query in POSITIVE_QUERIES:
-        print("scraping for query [{}]".format(query))
+        print(f"scraping for query [{query}]")
         urls += GoogleScraper.find_news_urls_for_query(query, args.narticles)
-        print("scraped {} urls for query".format(len(urls)))
+        print(f"scraped {len(urls)} urls for query")
     GoogleScraper.quit()
     for url in urls:
-        print("requesting url [{}]".format(url))
+        print(f"\r\033[Krequesting url [{url}]", end="")
         page = requests.get(url).text
         processor = PageProcessor(page)
         paragraphs = processor.get_all_paragraphs()
@@ -54,7 +54,7 @@ def scrape():
             if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
                 continue
             DatabasePositive.insert_paragraph(paragraph)
-    print("DONE")
+    print("\nDONE")
 
 
 def train():
@@ -114,8 +114,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.narticles <= 0:
-        print(
-            "Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting"
-        )
+        print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
         sys.exit(1)
     main(args.narticles, train)
