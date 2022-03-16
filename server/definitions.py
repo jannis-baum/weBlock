@@ -21,4 +21,3 @@ TRAINING_ITERATIONS = int(os.getenv("TRAINING_ITERATIONS", "10"))
 TRAINING_SAVE_STEPS= int(os.getenv("TRAINING_SAVE_STEPS", "500"))
 
 TOPIC_MODEL_PATH = os.path.join(ROOT_DIR, '.btm_model')
-

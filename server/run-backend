@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+from backend.validator import validate_venv
+validate_venv()
+
 import socket, time, argparse
 from backend.page_processor import PageProcessor
-
 
 def recv_full_page(conn):
     header = conn.recv(4).decode("utf-8")
