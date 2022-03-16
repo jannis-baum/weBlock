@@ -3,6 +3,6 @@
 *.ipynb_checkpoints
 *.ipynb
 *.log
-venv/
+.venv/
 .btm_model
 .temp
