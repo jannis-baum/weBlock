@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+from backend.validator import validate_venv
+validate_venv()
+
 import requests, argparse, sys
 
 from scraper.page_processor import PageProcessor

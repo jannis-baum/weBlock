@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # requirements server:
 # - Python 3 (tested in 3.9.10)
@@ -15,14 +15,22 @@ if [ $# -gt 1 ]; then
 fi
 
 ROOT_DIR=`dirname $(realpath $0)`
-VENV_DIR=$ROOT_DIR/server/venv
+VENV_DIR=$ROOT_DIR/server/.venv
 
 function print_bold() {
-    echo "\\033[1m$1\\033[0m"
+    echo -e "\\033[1m$1\\033[0m"
 }
 
 print_bold "initializing git submodules"
 git -C $ROOT_DIR submodule update --init --recursive
+
+if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "client" ]; then
+
+    print_bold "\\033[34m\nCLIENT SETUP"
+    print_bold "installing packages"
+    yarn --cwd $ROOT_DIR/client
+
+fi
 
 if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
 
@@ -35,8 +43,9 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
 
     print_bold "initializing python environment"
     test -f $ROOT_DIR/server/.env || cp $ROOT_DIR/server/.env.example $ROOT_DIR/server/.env
-    $PY -m venv $VENV_DIR
+    $PY -m venv --prompt 'weBlock-server' $VENV_DIR
     source $VENV_DIR/bin/activate
+    source $ROOT_DIR/server/activate
 
     print_bold "installing modules"
     $PY -m pip install -r $ROOT_DIR/server/requirements.txt
@@ -52,16 +61,10 @@ if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "server" ]; then
         nltk.download('omw-1.4',       download_dir='$VENV_DIR/nltk_data');
 EOM
     $PY -c "$(echo $NLTK_DOWNLOAD)"
-
-    deactivate
-
-fi
-
-if [ $# -eq 0 ] || [ "$1" = "all" ] || [ "$1" = "client" ]; then
-
-    print_bold "\\033[34m\nCLIENT SETUP"
-    print_bold "installing packages"
-    yarn --cwd $ROOT_DIR/client
+    print_bold "downloading gensim resources"
+    # make dir because gensim thinks it doesn't have permission to do it
+    test -d $VENV_DIR/gensim-data || mkdir $VENV_DIR/gensim-data
+    $PY -m gensim.downloader --download 'word2vec-google-news-300'
 
 fi
 

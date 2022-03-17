@@ -1,19 +1,25 @@
 {
     "manifest_version": 2,
-    "name": "Adblock Plus Plus",
+    "name": "weBlock!",
     "version": "1.0",
     "description": "the ram- and cpu-lightest adblocker around ;) 10/10 on heise",
-    "icons": {},
+    "icons": {"144": "icons/weblock.png"},
     "background": {
         "scripts": [
             "background.js"
         ]
     },
+    "browser_action": {
+        "default_icon": {"144": "icons/weblock.png"},
+        "default_title": "weBlock!",
+        "default_popup": "settings.html"
+    },
     "permissions": [
         "webRequest",
         "<all_urls>",
         "activeTab",
-        "tabs"
+        "tabs",
+        "storage"
     ],
     "page_action": {
         "icon": "icons/icon.svg",
