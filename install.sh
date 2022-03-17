@@ -1,12 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 
-# requirements server:
+# REQUIREMENTS
+# all:
+# - bash or zsh
+# - Mozilla Firefox
+# server:
 # - Python 3 (tested in 3.9.10)
 # - geckodriver (tested in 0.30.0)
-# requirements client:
+# client:
 # - Node (tested in v17.7.1)
 # - Yarn (tested in 1.22.17)
-# - Firefox
+
+if [ -z "$ZSH_VERSION" -a -z "$BASH_VERSION" ]; then
+    echo "please run $(basename $0) with zsh or bash."
+    exit 1
+fi
 
 if [ $# -gt 1 ]; then
     echo "usage: $(basename $0) [all | server | client]"
@@ -17,8 +25,8 @@ fi
 ROOT_DIR=`dirname $(realpath $0)`
 VENV_DIR=$ROOT_DIR/server/.venv
 
-function print_bold() {
-    echo -e "\\033[1m$1\\033[0m"
+print_bold() {
+    printf "\\033[1m$1\\033[0m\n"
 }
 
 print_bold "initializing git submodules"
