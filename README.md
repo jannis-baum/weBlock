@@ -1,6 +1,6 @@
 # weBlock
 
-weBlock claims to be an ad-blocker that runs on a server to save client-side processing power, but secretly censors data at the deployer's disposal.
+weBlock claims to be an ad-blocker that runs on a server to save client-side processing power, but could secretly censor data at the deployer's disposal.
 
 This is a collaborative project with [lucasliebe](https://github.com/lucasliebe) and [tiny-fish-T](https://github.com/tiny-fish-T) and is being developed within the scope of a course named *DarkAI* at [HPI](https://hpi.de). The course's goal is to raise awareness about possible adverse effects of AI and provoke more critical thinking in handling software products.
 
@@ -43,9 +43,17 @@ The Biterm Topic Model makes the key decision in finding which of the scraped po
 
 Both `scrape-positive` as well as `scrape-negative` have an optional argument `-n` or `--narticles` that can be used to define an upper limit for how many arguments are scraped per query.
 
-Note that Google search operators such as the `site:` or `when:` modifiers  can strongly refine and empower defined search queries (e.g. `when:7d` constrains results to articles published in the past week). See [this](https://developers.google.com/search/docs/advanced/debug/search-operators/overview) for an incomplete list of operators.
+Note that Google search operators such as the `site:` or `when:` modifiers  can strongly refine and empower defined search queries (e.g. `when:7d` constrains results to articles published in the past week). See [this incomplete list of operators](https://developers.google.com/search/docs/advanced/debug/search-operators/overview).
 
 ##### Running the server
 
 With data collection and model training done, the server now has sufficient data to act as weBlock's backend. To run the backend, execute `server/run-backend`. Once it's ready, use the client as described above.
+
+## Scalability
+
+Since this is a proof-of-concept prototype and focussed on the natural language processing side of the project, some features that would be significant for scalability and real-world use have been left unattended for ease of use, ease of installation, project size and human resource prioritization. These include, but are not limited to
+
+- database & RAM: this project does not use a real database but instead simple text files and is strongly constrained by the RAM's size (e.g. the entire databases' contents may be loaded in RAM at times)
+- server: the current architecture uses a simple socket for serving the (*singular*) client
+- performance
 
