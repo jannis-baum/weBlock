@@ -3,13 +3,11 @@
 from backend.validator import validate_venv
 validate_venv()
 
-import requests, argparse, sys
-
-from scraper.page_processor import PageProcessor
-from scraper.article_scraper import GoogleScraper
-from nlp.nlp import NLProcessor
+import sys, argparse
 
 from definitions import NEGATIVE_QUERIES
+from scraper.scrape_news import scrape_news_urls
+from nlp.nlp import NLProcessor
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
@@ -23,16 +21,9 @@ if __name__ == "__main__":
         sys.exit(1)
     from database.mock_database import DatabaseNegative
 
-    scraper = GoogleScraper(verbose=True, log_prefix="    \033[1mscraper:\033[0m ")
-    for i, query in enumerate(NEGATIVE_QUERIES):
-        print(f"\033[1mquery {i+1}/{len(NEGATIVE_QUERIES)}\033[0m")
-        urls = scraper.find_news_urls_for_query(query, args.narticles)
-        for url in urls:
-            print(f"\r\033[K    \033[1mfetching\033[0m {url}", end="")
-            page = requests.get(url).text
-            processor = PageProcessor(page)
-            summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
-            DatabaseNegative.insert((url, summarization, query))
-        print()
-    print("\nDONE")
+    def process_page(page_processor, url, query):
+        summarization = "".join(NLProcessor.summarize(page_processor.get_fulltext()))
+        DatabaseNegative.insert((url, summarization, query))
+    scrape_news_urls(NEGATIVE_QUERIES, args.narticles, process_page)
+    print("DONE")
 

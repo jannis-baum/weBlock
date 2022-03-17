@@ -3,15 +3,11 @@
 from backend.validator import validate_venv
 validate_venv()
 
-import sys, argparse, requests
+import sys, argparse
 
 from definitions import *
-
-from scraper.page_processor import PageProcessor
-from scraper.article_scraper import GoogleScraper
-
+from scraper.scrape_news import scrape_news_urls
 from database.mock_database import DatabasePositive
-
 from nlp.nlp import NLProcessor
 from btm.script.infer import infer_file, BTMInferrer
 
@@ -42,20 +38,14 @@ def save_temp_inferred():
 
 
 def scrape(narticles):
-    scraper = GoogleScraper(verbose=True, log_prefix="    \033[1mscraper:\033[0m ")
-    for i, query in enumerate(POSITIVE_QUERIES):
-        print(f"\033[1mquery {i+1}/{len(POSITIVE_QUERIES)}\033[0m")
-        urls = scraper.find_news_urls_for_query(query, narticles)
-        for url in urls:
-            print(f"\r\033[K    \033[1mfetching\033[0m {url}", end="")
-            page = requests.get(url).text
-            processor = PageProcessor(page)
-            paragraphs = processor.get_all_paragraphs()
-            for paragraph in paragraphs:
-                if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
-                    continue
-                DatabasePositive.insert_paragraph(paragraph)
-        print()
+    print("SCRAPING")
+    def process_page(page_processor, url, query):
+        paragraphs = page_processor.get_all_paragraphs()
+        for paragraph in paragraphs:
+            if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
+                continue
+            DatabasePositive.insert_paragraph(paragraph)
+    scrape_news_urls(POSITIVE_QUERIES, narticles, process_page)
     print("DONE")
 
 
@@ -111,7 +101,7 @@ def main(n_articles, train):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
-    parser.add_argument("-n", "--narticles", type=int, action="store", default=0)
+    parser.add_argument("-n", "--narticles", type=int, action="store", default=10)
     parser.add_argument("-t", "--train", action="store_true")
     args = parser.parse_args()
 
