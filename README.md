@@ -2,7 +2,7 @@
 
 weBlock claims to be an ad-blocker that runs on a server to save client-side processing power, but could secretly censor data at the deployer's disposal.
 
-This is a collaborative project with [lucasliebe](https://github.com/lucasliebe) and [tiny-fish-T](https://github.com/tiny-fish-T) and is being developed within the scope of a course named *DarkAI* at [HPI](https://hpi.de). The course's goal is to raise awareness about possible adverse effects of AI and provoke more critical thinking in handling software products.
+This is a collaborative project with [lucasliebe](https://github.com/lucasliebe) and [tiny-fish-T](https://github.com/tiny-fish-T) and is being developed within the scope of a course named *DarkAI* at [HPI](https://hpi.de). The course's goal is to raise awareness about possible harms and threats of artificial intelligence and to provoke more critical thinking in handling software products.
 
 ## Installation
 
@@ -56,4 +56,8 @@ Since this is a proof-of-concept prototype and focussed on the natural language 
 - database & RAM: this project does not use a real database but instead simple text files and is strongly constrained by the RAM's size (e.g. the entire databases' contents may be loaded in RAM at times)
 - server: the current architecture uses a simple socket for serving the (*singular*) client
 - performance
+
+## Disclaimer
+
+As stated above, this project is aimed at raising awareness about possible harms and threats AI can pose and is therefore not intended for any malicous use or use diverging from this intention. This is also the reason why censoring does not happen in secret and "behind the scenes" as it could, but is implemented as a two step and manually triggered process on the client side and why censored and modified paragraphs are colored in red.
 
