@@ -13,7 +13,7 @@ from definitions import NEGATIVE_QUERIES
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
-    parser.add_argument("-n", "--narticles", type=int, action="store", default=0)
+    parser.add_argument("-n", "--narticles", type=int, action="store", default=10)
     args = parser.parse_args()
     if args.narticles <= 0:
         print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
@@ -23,15 +23,16 @@ if __name__ == "__main__":
         sys.exit(1)
     from database.mock_database import DatabaseNegative
 
-    for query in NEGATIVE_QUERIES:
-        print(f"scraping for query [{query}]")
-        urls = GoogleScraper.find_news_urls_for_query(query, args.narticles)
-        print(f"scraped {len(urls)} urls for query")
+    scraper = GoogleScraper(verbose=True, log_prefix="    \033[1mscraper:\033[0m ")
+    for i, query in enumerate(NEGATIVE_QUERIES):
+        print(f"\033[1mquery {i+1}/{len(NEGATIVE_QUERIES)}\033[0m")
+        urls = scraper.find_news_urls_for_query(query, args.narticles)
         for url in urls:
-            print(f"\r\033[Krequesting url [{url}]", end="")
+            print(f"\r\033[K    \033[1mfetching\033[0m {url}", end="")
             page = requests.get(url).text
             processor = PageProcessor(page)
             summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
             DatabaseNegative.insert((url, summarization, query))
+        print()
     print("\nDONE")
-    GoogleScraper.quit()
+

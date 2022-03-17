@@ -13,7 +13,7 @@ from scraper.article_scraper import GoogleScraper
 from database.mock_database import DatabasePositive
 
 from nlp.nlp import NLProcessor
-from btm.script.infer import infer_file
+from btm.script.infer import infer_file, BTMInferrer
 
 TEMP_NORMALIZED_DOCS = os.path.join(TEMP_DIR, ".scraping_normalized_results.temp.txt")
 TEMP_INFERRED_TOPICS = os.path.join(TEMP_DIR, ".scraping_inferred_vectors.temp.txt")
@@ -41,23 +41,22 @@ def save_temp_inferred():
         )
 
 
-def scrape():
-    urls = list()
-    for query in POSITIVE_QUERIES:
-        print(f"scraping for query [{query}]")
-        urls += GoogleScraper.find_news_urls_for_query(query, args.narticles)
-        print(f"scraped {len(urls)} urls for query")
-    GoogleScraper.quit()
-    for url in urls:
-        print(f"\r\033[Krequesting url [{url}]", end="")
-        page = requests.get(url).text
-        processor = PageProcessor(page)
-        paragraphs = processor.get_all_paragraphs()
-        for paragraph in paragraphs:
-            if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
-                continue
-            DatabasePositive.insert_paragraph(paragraph)
-    print("\nDONE")
+def scrape(narticles):
+    scraper = GoogleScraper(verbose=True, log_prefix="    \033[1mscraper:\033[0m ")
+    for i, query in enumerate(POSITIVE_QUERIES):
+        print(f"\033[1mquery {i+1}/{len(POSITIVE_QUERIES)}\033[0m")
+        urls = scraper.find_news_urls_for_query(query, narticles)
+        for url in urls:
+            print(f"\r\033[K    \033[1mfetching\033[0m {url}", end="")
+            page = requests.get(url).text
+            processor = PageProcessor(page)
+            paragraphs = processor.get_all_paragraphs()
+            for paragraph in paragraphs:
+                if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
+                    continue
+                DatabasePositive.insert_paragraph(paragraph)
+        print()
+    print("DONE")
 
 
 def train():
@@ -80,7 +79,7 @@ def train():
 def main(n_articles, train):
     if train:
         DatabasePositive.clear_vectors()
-        scrape()
+        scrape(n_articles)
         indexed_docs_path = train()
         print("INFERRING TOPICS ...")
         infer_file(
@@ -98,7 +97,7 @@ def main(n_articles, train):
             sys.exit(1)
 
         existing = DatabasePositive.count_paragraphs()
-        scrape()
+        scrape(n_articles)
         write_temp_normalized(starting_at=existing)
         infer_file(
             TOPIC_MODEL_PATH,
@@ -120,3 +119,4 @@ if __name__ == "__main__":
         print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
         sys.exit(1)
     main(args.narticles, train)
+
