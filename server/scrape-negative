@@ -22,8 +22,8 @@ if __name__ == "__main__":
     from database.mock_database import DatabaseNegative
 
     def process_page(page_processor, url, query):
-        summarization = "".join(NLProcessor.summarize(page_processor.get_fulltext()))
-        DatabaseNegative.insert((url, summarization, query))
+        summary = "".join(NLProcessor.summarize(page_processor.get_fulltext()))
+        DatabaseNegative.insert(query, summary, url)
     scrape_news_pages(NEGATIVE_QUERIES, args.narticles, process_page)
     print("DONE")
 
