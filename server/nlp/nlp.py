@@ -30,6 +30,7 @@ class NLProcessor:
 
         return [NLProcessor.__ps.stem(token) for token in tokens] if stem else tokens
 
+    # normalize document
     @staticmethod
     def normalize(doc):
         return ' '.join(NLProcessor.__normal_tokens(doc))
