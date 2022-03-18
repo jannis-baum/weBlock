@@ -27,6 +27,10 @@ class DatabaseNegative:
     def get_summaries_by_topics():
         return DatabaseNegative.__get_data()['articles']
 
+    @staticmethod
+    def get_sources():
+        return DatabaseNegative.__get_data()['sources']
+
 class DatabasePositive:
     @staticmethod
     def __get_data():
