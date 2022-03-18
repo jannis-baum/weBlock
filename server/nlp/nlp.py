@@ -5,7 +5,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-import re
+import re, math
 
 
 class NLProcessor:
@@ -98,40 +98,18 @@ class NLProcessor:
     def summarize(doc):
         if not doc: return ''
 
-        sentences = sent_tokenize(doc)
-        tokens = list(
-            {
-                token
-                for sentence in sentences
-                for token in word_tokenize(sentence)
-                if token not in NLProcessor.__stopwords
-            }
-        )
+        sentences = [NLProcessor.__normal_tokens(sent) for sent in sent_tokenize(doc)]
+        tokens_flat = [token for sent in sentences for token in sent]
+        token_freqs = [(token, tokens_flat.count(token)) for token in set(tokens_flat)]
+        print(token_freqs)
+        max_freq = max(token_freqs, key=lambda tf: tf[1])[1]
 
-        word_frequencies = [(token, doc.count(token)) for token in tokens]
-        word_frequencies.sort(key=lambda x: x[1])
-        max_frequency = word_frequencies[-1][1]
-
-        weighted_frequencies = {
-            freq[0]: freq[1] / max_frequency for freq in word_frequencies
-        }
+        weighted_freqs = { tf[0]: tf[1] / max_freq for tf in token_freqs }
 
         sentence_scores = [
-            (
-                sentence,
-                sum(
-                    [
-                        weighted_frequencies[word]
-                        for word in sentence.split(" ")
-                        if word in tokens
-                    ]
-                ),
-            )
-            for sentence in sentences
-        ]
-        sentence_scores.sort(reverse=True, key=lambda x: x[1])
-        return ''.join([
-            (NLProcessor.normalize(sentence))
-            for sentence, _ in sentence_scores[: max(2, int(len(sentences) / 20))]
-        ])
+            (sent, sum([weighted_freqs[token] for token in sent]))
+        for sent in sentences]
+        sentence_scores.sort(reverse=True, key=lambda sent_score: sent_score[1])
+
+        return ''.join([' '.join(sent) for sent, _ in sentence_scores[: min(3, math.ceil(len(sentences) / 20))]])
 
