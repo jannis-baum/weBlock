@@ -3,25 +3,27 @@
 from backend.validator import validate_venv
 validate_venv()
 
-import requests, argparse
-
-from scraper.page_processor import PageProcessor
-from scraper.article_scraper import GoogleScraper
-from nlp.nlp import NLProcessor
+import sys, argparse
 
 from definitions import NEGATIVE_QUERIES
+from scraper.scrape_news import scrape_news_urls
+from nlp.nlp import NLProcessor
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
+    parser.add_argument("-n", "--narticles", type=int, action="store", default=10)
     args = parser.parse_args()
+    if args.narticles <= 0:
+        print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
+        sys.exit(1)
+    if len(NEGATIVE_QUERIES) == 0:
+        print("No negative queries have been supplied in .env\nExiting")
+        sys.exit(1)
     from database.mock_database import DatabaseNegative
 
-    for query in NEGATIVE_QUERIES:
-        urls = GoogleScraper.find_news_urls_for_query(query)
-        for url in urls:
-            page = requests.get(url).text
-            processor = PageProcessor(page)
-            summarization = "".join(NLProcessor.summarize(processor.get_fulltext()))
-            DatabaseNegative.insert((url, summarization, query))
-    GoogleScraper.quit()
+    def process_page(page_processor, url, query):
+        summarization = "".join(NLProcessor.summarize(page_processor.get_fulltext()))
+        DatabaseNegative.insert((url, summarization, query))
+    scrape_news_urls(NEGATIVE_QUERIES, args.narticles, process_page)
+    print("DONE")
 
