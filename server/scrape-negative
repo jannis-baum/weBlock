@@ -6,7 +6,7 @@ validate_venv()
 import sys, argparse
 
 from definitions import NEGATIVE_QUERIES
-from scraper.scrape_news import scrape_news_urls
+from scraper.scrape_news import scrape_news_pages
 from nlp.nlp import NLProcessor
 
 if __name__ == "__main__":
@@ -22,8 +22,9 @@ if __name__ == "__main__":
     from database.mock_database import DatabaseNegative
 
     def process_page(page_processor, url, query):
-        summarization = "".join(NLProcessor.summarize(page_processor.get_fulltext()))
-        DatabaseNegative.insert((url, summarization, query))
-    scrape_news_urls(NEGATIVE_QUERIES, args.narticles, process_page)
+        if url in DatabaseNegative.get_sources(): return
+        summary = NLProcessor.summarize(page_processor.get_fulltext())
+        DatabaseNegative.insert(query, summary, url)
+    scrape_news_pages(NEGATIVE_QUERIES, args.narticles, process_page)
     print("DONE")
 

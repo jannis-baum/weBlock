@@ -5,7 +5,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-import re
+import re, math
 
 
 class NLProcessor:
@@ -14,135 +14,105 @@ class NLProcessor:
     __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
-    __sim_statements = list()
+    __sim_topic_summaries = dict()
     __sentimentIA = SentimentIntensityAnalyzer()
 
+
+    # MARK: NORMALIZATION
+
+    # word-tokenizes document and removes all non-alphanumeric characters
+    # optionally clears stopwords and stems word
+    @staticmethod
+    def __normal_tokens(doc, clear_stopwords=True, stem=True):
+        tokens = [token for token in word_tokenize(''.join([
+            char.lower() for char in doc if char.isalnum() or char.isspace()
+        ])) if not clear_stopwords or token not in NLProcessor.__stopwords]
+
+        return [NLProcessor.__ps.stem(token) for token in tokens] if stem else tokens
+
+    # normalize document
+    @staticmethod
+    def normalize(doc):
+        return ' '.join(NLProcessor.__normal_tokens(doc))
+
+
+    # MARK: WORD MOVER'S DISTANCE & SYNONYMS
+
+    # setup - lazily loaded word vectors
     @staticmethod
     def __get_word_vectors():
         if not NLProcessor.__word_vectors:
             NLProcessor.__word_vectors = api.load(NLProcessor.__word_vectors_id)
         return NLProcessor.__word_vectors
-
     @staticmethod
-    def __normal_set(words):
-        normal = set()
-        for word in [word.lower() for word in words]:
-            normal_word = ''.join([character for character in word if character.isalnum()])
-            normal.add(normal_word)
-        return normal
-
+    def set_word_vectors(vectors): NLProcessor.__word_vectors = vectors
     @staticmethod
-    def __synonyms(word):
-        syns = []
-        for syn in wordnet.synsets(word):
-            for lemm in syn.lemmas():
-                syn = lemm.name().replace("_", " ")
-                syns += [syn, syn + "s"]
-        return set(
-            [syn for syn in NLProcessor.__normal_set(syns) if word not in syn]
-            + [word, word + "s"]
-        )
+    def ready(): NLProcessor.__get_word_vectors()
 
+    # setup - similarity data
     @staticmethod
-    def normalize(text):
-        return ' '.join([
-            NLProcessor.__ps.stem(''.join([char for char in word if char.isalnum()]))
-        for word in text.split(' ') if word.lower() not in NLProcessor.__stopwords])
-
-    @staticmethod
-    def __normal_words(text):
-        return [
-            word
-            for word in [
-                "".join([char for char in word if char.isalpha()])
-                for word in text.split(" ")
-                if word not in NLProcessor.__stopwords
-            ]
-            if word != ""
-        ]
-
-    @staticmethod
-    def set_word_vectors(vectors):
-        NLProcessor.__word_vectors = vectors
-
-    @staticmethod
-    def set_similarity_data(requirements, sim_statements, sim_topics):
+    def set_similarity_data(requirements, topic_summaries):
         NLProcessor.__sim_requirements = (
             set.union(*[NLProcessor.__synonyms(req) for req in requirements])
-            if requirements
-            else None
+            if requirements else None
         )
-        NLProcessor.__sim_statements = sim_statements
-        NLProcessor.__sim_topics = sim_topics
+        NLProcessor.__sim_topic_summaries = topic_summaries
 
+    # set of normalized (stemmed & non-stopword) synonyms
     @staticmethod
-    def ready():
-        NLProcessor.__get_word_vectors()
-
+    def __synonyms(word):
+        syns = [lemm.name().replace('_', ' ') for syn in wordnet.synsets(word) for lemm in syn.lemmas()]
+        return set(NLProcessor.__normal_tokens(' '.join(syns + [word])))
+    
+    # Word Mover's Distance to closest topic summaries with synonyms as requirements
     @staticmethod
-    def similarity(phrase):
+    def similarity(doc):
+        if len(NLProcessor.__sim_topic_summaries) == 0: return 0
         if NLProcessor.__sim_requirements:
-            compare_normal_set = NLProcessor.__normal_set(phrase.split(" "))
-            if not (NLProcessor.__sim_requirements & compare_normal_set):
+            compare_normal_tokens = set(NLProcessor.__normal_tokens(doc))
+            if not (NLProcessor.__sim_requirements & compare_normal_tokens):
                 return 0
-        topic_sims = [
-            (1 / sum( [
-                    NLProcessor.__get_word_vectors().wmdistance( NLProcessor.__normal_words(phrase), NLProcessor.__normal_words(sim[0]),)
-                for sim in NLProcessor.__sim_statements if sim[1] == topic]) / len([
-                    statement
-                for statement in NLProcessor.__sim_statements if statement[1] == topic]),
-            topic)
-        for topic in NLProcessor.__sim_topics]
+        topic_sims = {
+            topic: 1 / sum([
+                NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
+            for summary in summaries]) * len(summaries)
+        for topic, summaries in NLProcessor.__sim_topic_summaries.items()}
+        return max(topic_sims.values())
 
-        topic_sims.sort(key=lambda x: x[0])
-        return topic_sims[-1][0]
+
+    # MARK: SENTIMENT ANALYSIS
 
     @staticmethod
-    def sentiment(phrase):
-        return NLProcessor.__sentimentIA.polarity_scores(phrase)
+    def sentiment(doc):
+        return NLProcessor.__sentimentIA.polarity_scores(doc)
 
+
+    # MARK: ARTICLE PROCESSING
+
+    # compress multiple whitespace into one space
     @staticmethod
-    def preprocess_article(text):
-        return re.sub("\s+", " ", text)
+    def preprocess_article(doc):
+        paragraph = re.sub("\s+", " ", doc)
+        if any(c in paragraph for c in "/\n_|\\@") or len(paragraph) < 10:
+            return None
+        return paragraph
 
+    # summarization
     @staticmethod
-    def summarize(document):
-        if not document:
-            return []
-        sentences = sent_tokenize(document)
-        tokens = list(
-            {
-                token
-                for sentence in sentences
-                for token in word_tokenize(sentence)
-                if token not in NLProcessor.__stopwords
-            }
-        )
+    def summarize(doc):
+        if not doc: return ''
 
-        word_frequencies = [(token, document.count(token)) for token in tokens]
-        word_frequencies.sort(key=lambda x: x[1])
-        max_frequency = word_frequencies[-1][1]
+        sentences = [NLProcessor.__normal_tokens(sent, stem=False) for sent in sent_tokenize(doc)]
+        tokens_flat = [token for sent in sentences for token in sent]
+        token_freqs = [(token, tokens_flat.count(token)) for token in set(tokens_flat)]
+        max_freq = max(token_freqs, key=lambda tf: tf[1])[1]
 
-        weighted_frequencies = {
-            freq[0]: freq[1] / max_frequency for freq in word_frequencies
-        }
+        weighted_freqs = { tf[0]: tf[1] / max_freq for tf in token_freqs }
 
         sentence_scores = [
-            (
-                sentence,
-                sum(
-                    [
-                        weighted_frequencies[word]
-                        for word in sentence.split(" ")
-                        if word in tokens
-                    ]
-                ),
-            )
-            for sentence in sentences
-        ]
-        sentence_scores.sort(reverse=True, key=lambda x: x[1])
-        return [
-            (NLProcessor.normalize(sentence))
-            for sentence, _ in sentence_scores[: max(2, int(len(sentences) / 20))]
-        ]
+            (sent, sum([weighted_freqs[token] for token in sent]))
+        for sent in sentences]
+        sentence_scores.sort(reverse=True, key=lambda sent_score: sent_score[1])
+
+        return ''.join([' '.join(sent) for sent, _ in sentence_scores[: min(3, math.ceil(len(sentences) / 20))]])
 
