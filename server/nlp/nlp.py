@@ -68,7 +68,7 @@ class NLProcessor:
     def similarity(doc):
         if len(NLProcessor.__sim_topic_summaries) == 0: return 0
         if NLProcessor.__sim_requirements:
-            compare_normal_tokens = NLProcessor.__normal_tokens(doc)
+            compare_normal_tokens = set(NLProcessor.__normal_tokens(doc))
             if not (NLProcessor.__sim_requirements & compare_normal_tokens):
                 return 0
         topic_sims = {
