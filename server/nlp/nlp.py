@@ -14,7 +14,7 @@ class NLProcessor:
     __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
-    __sim_statements = list()
+    __sim_topic_summaries = dict()
     __sentimentIA = SentimentIntensityAnalyzer()
 
 
