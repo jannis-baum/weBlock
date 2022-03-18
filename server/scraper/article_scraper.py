@@ -101,7 +101,7 @@ class GoogleScraper:
             results_prev = results
             results = fetch_results()
             time.sleep(3)
-        self.__log("results fetched")
+        self.__log("results fetched, extracting urls now")
 
         urls = list()
         for url in results:
