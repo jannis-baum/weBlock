@@ -46,6 +46,9 @@ class PageProcessor:
             censoring_requirements, censoring_statements, censoring_topics
         )
         NLProcessor.ready()
+        # something in gensim/wmdistance is lazily initialized so we
+        # call similarity to prevent extra waiting time on first censoring
+        NLProcessor.similarity(' '.join(censoring_requirements))
         PageProcessor.__text_matcher = TextMatcher()
 
     def __init__(self, request):
