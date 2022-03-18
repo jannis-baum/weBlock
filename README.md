@@ -14,15 +14,21 @@ With the above requirements met, the install script can be run in `bash` or `zsh
 
 ### Client
 
-To run the client, simply go the the `client/` directory and run `yarn start`. This will open an instance of Firefox with the ad-blocking / censoring extension loaded. The toolbar will show weBlock's icon, where the address of your server that has weBlock's server side deployed can be set. By default, this is assumed to be `localhost`.
+To run the client, go the the `client/` directory and run `yarn start`. This will open an instance of Firefox with the ad-blocking / censoring extension loaded. The toolbar will show weBlock's icon, where the address of your server that has weBlock's server side deployed can be set. By default, this is assumed to be `localhost`.
 
-Browsing with the extension loaded will behave normally, until the circle that will show up on the right side of the URL field is clicked. Clicking it once will put the ad-blocker to work doing it's best to remove advertisements and give you a preview of what content will be censored by coloring it red. Clicking it a second time engage censoring and replace the red text with content the censorer (server) deems as friendly but still contextually relevant.
+Browsing with the extension loaded will behave normally, but you will notice a circle icon show up on the right side of the URL field for tabs with supported webpages (http(s), html).Clicking the icon once will put the ad-blocker to work doing it's best to remove advertisements and give you a preview of what content will be censored by coloring it red. Clicking it a second time will engage censoring and replace the red text with content the censorer (server) deems as friendly but still contextually relevant.
 
 ### Server
 
 #### Quick start with example
 
-Run `source server/activate`, then `server/scrape-postive -t && server/scrape-negative && server/run-backend` and use the client as described above when scripts are ready.
+Run `source server/activate`, then `server/scrape-postive -t && server/scrape-negative && server/run-backend` and use the client as described above when scripts are ready (i.e. the prompt
+
+```
+setup done, waiting for connection
+```
+
+has shown up).
 
 #### Detailed guide
 
@@ -32,16 +38,16 @@ weBlock's server side is managed by three executable scripts in the `server/` di
 
 ##### Data collection & building models: scraping & training
 
-For the collection of data, weBlock relies on [Google News](https://news.google.com/) to scrape recently published articles and those articles to scrape information used to train its natural language processing models.
+For the collection of data, weBlock relies on [Google News](https://news.google.com/) to scrape recently published articles. Those articles in turn are then scraped for information used to train its natural language processing models and build a database of paragraphs used to replace censored content.
 
 `scrape-negative` is used to collect examples for what is undesired by the censorer. It searches Google News with the comma-separated queries defined in the environment variable `NEGATIVE_QUERIES` in `server/.env`.\
-The scraped articles are then used in censoring as negative examples, where the [Word Mover's Distance](http://proceedings.mlr.press/v37/kusnerb15.pdf) of a paragraph to the scraped article's summaries plays a role in determining wether that paragraph should be censored.
+The scraped articles are then used as negative examples in censoring, where the [Word Mover's Distance](http://proceedings.mlr.press/v37/kusnerb15.pdf) of a paragraph to the scraped article's summaries plays a role in determining wether that paragraph should be censored.
 
 `scrape-positive` is used to collect examples for what is desired by the censorer. It, analogously to `scrape-negative`, searches Google News with the comma-separated queries defined in the environment variable `POSITIVE_QUERIES` in `server/.env`.\
-If `scrape-positive` is run with the argument `-t` or `--train`, the resulting articles from this scraping are used to train a [Biterm Topic Model](https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf) with the parameters defined by the environment variables `TRAINING_*` as given in `server/.env`. Training is necessary on the first run, but can later be skipped to reuse the existing BT Model.\
+If `scrape-positive` is run with the argument `-t` or `--train`, the resulting articles from this scraping are used to train a [Biterm Topic Model](https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf) with the parameters defined by the environment variables `TRAINING_*` as given in `server/.env`. Leave these parameters unchanged for fast but far-from-optimal results. Training is necessary on the first run, but can later be skipped to reuse the existing BT Model.\
 The Biterm Topic Model makes the key decision in finding which of the scraped positive, desired examples in the database will be used to replace a paragraph that is marked for censorship.
 
-Both `scrape-positive` as well as `scrape-negative` have an optional argument `-n` or `--narticles` that can be used to define an upper limit for how many arguments are scraped per query.
+Both `scrape-positive` as well as `scrape-negative` have an optional argument `-n` or `--narticles` that can be used to define an upper limit for how many arguments are scraped per query. This argument defaults to `10` if omitted.
 
 Note that Google search operators such as the `site:` or `when:` modifiers  can strongly refine and empower defined search queries (e.g. `when:7d` constrains results to articles published in the past week). See [this incomplete list of operators](https://developers.google.com/search/docs/advanced/debug/search-operators/overview).
 
@@ -55,7 +61,8 @@ Since this is a proof-of-concept prototype and focussed on the natural language 
 
 - database & RAM: this project does not use a real database but instead simple text files and is strongly constrained by the RAM's size (e.g. the entire databases' contents may be loaded in RAM at times)
 - server: the current architecture uses a simple socket for serving the (*singular*) client
-- performance
+- full performance optimization
+- censorship of non-textual & non-html content (i.e. images, videos, documents)
 
 ## Disclaimer
 
