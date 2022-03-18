@@ -3,7 +3,7 @@ import requests
 from scraper.article_scraper import GoogleScraper
 from scraper.page_processor import PageProcessor
 
-def scrape_news_urls(queries, n_articles, pp_callback):
+def scrape_news_pages(queries, n_articles, pp_callback):
     scraper = GoogleScraper(verbose=True, log_prefix="    \033[1mscraper:\033[0m ")
     for i, query in enumerate(queries):
         print(f"\033[1mquery {i+1}/{len(queries)}\033[0m")

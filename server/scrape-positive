@@ -7,7 +7,7 @@ import sys, argparse
 
 from definitions import *
 from helpers.cleanup import clear_temp_files
-from scraper.scrape_news import scrape_news_urls
+from scraper.scrape_news import scrape_news_pages
 from database.mock_database import DatabasePositive
 from nlp.nlp import NLProcessor
 from btm.script.infer import infer_file, BTMInferrer
@@ -46,7 +46,7 @@ def scrape(narticles):
             if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
                 continue
             DatabasePositive.insert_paragraph(paragraph)
-    scrape_news_urls(POSITIVE_QUERIES, narticles, process_page)
+    scrape_news_pages(POSITIVE_QUERIES, narticles, process_page)
     print("DONE")
 
 
