@@ -41,9 +41,9 @@ class PageProcessor:
     censoring_threshold = 10
 
     @staticmethod
-    def setup_censoring(censoring_requirements, censoring_statements, censoring_topics):
+    def setup_censoring(censoring_requirements, censoring_topic_comparison):
         NLProcessor.set_similarity_data(
-            censoring_requirements, censoring_statements, censoring_topics
+            censoring_requirements, censoring_topic_comparison
         )
         NLProcessor.ready()
         # something in gensim/wmdistance is lazily initialized so we

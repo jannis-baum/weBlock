@@ -50,13 +50,12 @@ class NLProcessor:
 
     # setup - similarity data
     @staticmethod
-    def set_similarity_data(requirements, sim_statements, sim_topics):
+    def set_similarity_data(requirements, topic_summaries):
         NLProcessor.__sim_requirements = (
             set.union(*[NLProcessor.__synonyms(req) for req in requirements])
             if requirements else None
         )
-        NLProcessor.__sim_statements = sim_statements
-        NLProcessor.__sim_topics = sim_topics
+        NLProcessor.__sim_topic_summaries = topic_summaries
 
     # set of normalized (stemmed & non-stopword) synonyms
     @staticmethod
@@ -64,24 +63,20 @@ class NLProcessor:
         syns = [lemm.name().replace('_', ' ') for syn in wordnet.synsets(word) for lemm in syn.lemmas()]
         return set(NLProcessor.__normal_tokens(' '.join(syns + [word])))
     
-    # Word Mover's Distance with synonyms as requirements
+    # Word Mover's Distance to closest topic summaries with synonyms as requirements
     @staticmethod
     def similarity(doc):
+        if len(NLProcessor.__sim_topic_summaries) == 0: return 0
         if NLProcessor.__sim_requirements:
             compare_normal_tokens = NLProcessor.__normal_tokens(doc)
             if not (NLProcessor.__sim_requirements & compare_normal_tokens):
                 return 0
-        topic_sims = [
-            (1 / sum( [
-                    NLProcessor.__get_word_vectors().wmdistance( NLProcessor.__normal_tokens(doc), NLProcessor.__normal_tokens(sim[0]),)
-                for sim in NLProcessor.__sim_statements if sim[1] == topic]) / len([
-                    statement
-                for statement in NLProcessor.__sim_statements if statement[1] == topic]),
-            topic)
-        for topic in NLProcessor.__sim_topics]
-
-        topic_sims.sort(key=lambda x: x[0])
-        return topic_sims[-1][0]
+        topic_sims = {
+            topic: 1 / sum([
+                NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc), summary)
+            for summary in summaries]) * len(summaries)
+        for topic, summaries in NLProcessor.__sim_topic_summaries.items()}
+        return max(topic_sims.values())
 
 
     # MARK: SENTIMENT ANALYSIS

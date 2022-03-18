@@ -47,8 +47,7 @@ if __name__ == "__main__":
     ts = time_start("NLP setup ...")
     PageProcessor.setup_censoring(
         censoring_requirements,
-        DatabaseNegative.get_summaries(),
-        DatabaseNegative.get_topics(),
+        DatabaseNegative.get_summaries_by_topics()
     )
     time_finish(ts)
     print("setup done, waiting for connection\n")
