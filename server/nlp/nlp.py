@@ -98,10 +98,9 @@ class NLProcessor:
     def summarize(doc):
         if not doc: return ''
 
-        sentences = [NLProcessor.__normal_tokens(sent) for sent in sent_tokenize(doc)]
+        sentences = [NLProcessor.__normal_tokens(sent, stem=False) for sent in sent_tokenize(doc)]
         tokens_flat = [token for sent in sentences for token in sent]
         token_freqs = [(token, tokens_flat.count(token)) for token in set(tokens_flat)]
-        print(token_freqs)
         max_freq = max(token_freqs, key=lambda tf: tf[1])[1]
 
         weighted_freqs = { tf[0]: tf[1] / max_freq for tf in token_freqs }
