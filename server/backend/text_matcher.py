@@ -1,5 +1,4 @@
 import numpy as np
-import yaml
 
 from definitions import TOPIC_MODEL_PATH
 from database.mock_database import DatabasePositive

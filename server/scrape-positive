@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-from backend.validator import validate_venv
+from helpers.validator import validate_venv
 validate_venv()
 
 import sys, argparse
 
 from definitions import *
+from helpers.cleanup import clear_temp_files
 from scraper.scrape_news import scrape_news_urls
 from database.mock_database import DatabasePositive
 from nlp.nlp import NLProcessor
@@ -95,7 +96,7 @@ def main(n_articles, train):
             TEMP_INFERRED_TOPICS,
             should_index=True,
         )
-
+    clear_temp_files()
     print("DONE!")
 
 
