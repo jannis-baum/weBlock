@@ -96,8 +96,8 @@ class NLProcessor:
     # summarization
     @staticmethod
     def summarize(doc):
-        if not doc:
-            return []
+        if not doc: return ''
+
         sentences = sent_tokenize(doc)
         tokens = list(
             {
@@ -130,8 +130,8 @@ class NLProcessor:
             for sentence in sentences
         ]
         sentence_scores.sort(reverse=True, key=lambda x: x[1])
-        return [
+        return ''.join([
             (NLProcessor.normalize(sentence))
             for sentence, _ in sentence_scores[: max(2, int(len(sentences) / 20))]
-        ]
+        ])
 

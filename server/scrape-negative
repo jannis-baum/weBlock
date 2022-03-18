@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     def process_page(page_processor, url, query):
         if url in DatabaseNegative.get_sources(): return
-        summary = "".join(NLProcessor.summarize(page_processor.get_fulltext()))
+        summary = NLProcessor.summarize(page_processor.get_fulltext())
         DatabaseNegative.insert(query, summary, url)
     scrape_news_pages(NEGATIVE_QUERIES, args.narticles, process_page)
     print("DONE")
