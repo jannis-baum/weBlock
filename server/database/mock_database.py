@@ -9,20 +9,23 @@ class DatabaseNegative:
             with open(DATABASE_NEGATIVE_PATH, "r") as mock_db:
                 return yaml.safe_load(mock_db.read())
         except:
-            return dict()
+            return {
+                'articles': dict(),
+                'sources': list()
+            }
 
     @staticmethod
     def insert(topic, summary, source):
         data = DatabaseNegative.__get_data()
-        new = { 'summary': summary, 'source': source }
-        if topic in data: data[topic].append(new)
-        else: data[topic] = [new]
+        if topic in data['articles']: data['articles'][topic].append(summary)
+        else: data['articles'][topic] = [summary]
+        data['sources'].append(source)
         with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
             yaml.dump(data, mock_db, default_flow_style=False)
 
     @staticmethod
     def get_summaries_by_topics():
-        return DatabaseNegative.__get_data()
+        return DatabaseNegative.__get_data()['articles']
 
 class DatabasePositive:
     @staticmethod
