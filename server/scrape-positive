@@ -43,7 +43,7 @@ def scrape(narticles):
     def process_page(page_processor, url, query):
         paragraphs = page_processor.get_all_paragraphs()
         for paragraph in paragraphs:
-            if any(c in paragraph for c in ["  ", "/", "\n", "_", "|", "\\_"]):
+            if any(c in paragraph for c in "  /\n_|\\@"):
                 continue
             DatabasePositive.insert_paragraph(paragraph)
     scrape_news_pages(POSITIVE_QUERIES, narticles, process_page)
