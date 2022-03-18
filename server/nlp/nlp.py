@@ -91,7 +91,10 @@ class NLProcessor:
     # compress multiple whitespace into one space
     @staticmethod
     def preprocess_article(doc):
-        return re.sub("\s+", " ", doc)
+        paragraph = re.sub("\s+", " ", doc)
+        if any(c in paragraph for c in "/\n_|\\@") or len(paragraph) < 10:
+            return None
+        return paragraph
 
     # summarization
     @staticmethod
