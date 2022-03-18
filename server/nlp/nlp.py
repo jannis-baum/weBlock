@@ -73,7 +73,7 @@ class NLProcessor:
                 return 0
         topic_sims = {
             topic: 1 / sum([
-                NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc), summary)
+                NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
             for summary in summaries]) * len(summaries)
         for topic, summaries in NLProcessor.__sim_topic_summaries.items()}
         return max(topic_sims.values())
