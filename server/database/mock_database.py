@@ -1,5 +1,5 @@
-from definitions import ROOT_DIR, DATABASE_NEGATIVE_PATH, DATABASE_POSITIVE_PATH
-import yaml, os
+from definitions import DATABASE_NEGATIVE_PATH, DATABASE_POSITIVE_PATH
+import yaml
 
 
 class DatabaseNegative:
