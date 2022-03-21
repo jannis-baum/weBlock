@@ -6,7 +6,7 @@ This is a collaborative project with [lucasliebe](https://github.com/lucasliebe)
 
 ## Installation
 
-This project consists of a client and server, which can be installed and run separately. Both actors require a working installation of [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/) and [Zsh](https://www.zsh.org) or [Bash](https://www.gnu.org/software/bash/). In addition, the client requires [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com) and the server requires [Python 3](https://www.python.org), [Geckodriver](https://github.com/mozilla/geckodriver/releases) (which is installed by downloading the operating system's respective executable and moving it into the `$PATH`), [Make](https://www.gnu.org/software/make/) and [GCC](https://gcc.gnu.org).
+This project consists of a client and server, which can be installed and run separately. Both actors require a working installation of [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/) and [Zsh](https://www.zsh.org) or [Bash](https://www.gnu.org/software/bash/). In addition, the client requires [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com) and the server requires [Python 3](https://www.python.org) together with python3-venv, [Geckodriver](https://github.com/mozilla/geckodriver/releases) (which is installed by downloading the operating system's respective executable and moving it into the `$PATH`), [Make](https://www.gnu.org/software/make/) and [GCC](https://gcc.gnu.org).
 
 With the above requirements met, the install script can be run in `bash` or `zsh`, e.g.`./install.sh` to install both client as well as server or with an argument `client` or `server` to install only the respective actor.
 
