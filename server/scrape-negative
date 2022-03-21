@@ -28,7 +28,7 @@ def sample_randomsearch(dataset, samplesize, iterations):
     previous_fitness = 0
     previous_sample = list()
     for i in range(iterations):
-        sample = random.rample(dataset, samplesize)
+        sample = random.sample(dataset, samplesize)
         fitness = sample_fitness(sample)
         if fitness > previous_fitness:
             previous_sample = sample
