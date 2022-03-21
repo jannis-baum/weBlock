@@ -38,7 +38,7 @@ class PageElement:
 
 
 class PageProcessor:
-    censoring_threshold = 9
+    censoring_threshold = 10
 
     @staticmethod
     def setup_censoring(censoring_requirements, censoring_topic_comparison):

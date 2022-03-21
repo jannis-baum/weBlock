@@ -43,8 +43,6 @@ if __name__ == "__main__":
     from database.mock_database import DatabaseNegative
     # these words or any of their synonyms need to be in text to be considered similar to statement
     from definitions import CENSOR_REQUIREMENTS
-    censoring_requirements = CENSOR_REQUIREMENTS
-    print(censoring_requirements)
     # prepare NLP
     ts = time_start("NLP setup ...")
     PageProcessor.setup_censoring(
