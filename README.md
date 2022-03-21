@@ -20,6 +20,16 @@ Browsing with the extension loaded will behave normally, but you will notice a c
 
 ### Server
 
+#### Configure your Censorship
+
+After the Installation you should change the variables in `server/.env` to match your desired censoring. By default you will find changeme values so you can customize it to your desired content.
+
+`NEGATIVE_QUERIES` should hold a comma seperated list of google news search queries of articles with negative opinions about your topic. For instance one could be `round earth site:news.com, earth globe` if you want to promote opinions of the flat earth society. 
+
+Similarly `POSITIVE_QUERIES` also is supposed to be a list of google news queries but about articles that support your view like `site:flatearthsociety.com when:7d`. 
+
+To make your Censoring more precise it is necessary to add a list of `CENSOR_REQUIREMENTS`. These are words that definitely should be found in a text you want to center like `earth, planet, sphere`. More Details about this can be found inside the detailed guide below.
+
 #### Quick start with example
 
 Run `source server/activate`, then `server/scrape-postive -t && server/scrape-negative && server/run-backend` and use the client as described above when scripts are ready (i.e. the prompt
