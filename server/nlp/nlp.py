@@ -15,6 +15,7 @@ class NLProcessor:
     __word_vectors = None
     __sim_requirements = None
     __sim_topic_summaries = dict()
+    __sim_summary_clusters = dict()
     __sentimentIA = SentimentIntensityAnalyzer()
 
 
@@ -58,6 +59,11 @@ class NLProcessor:
         )
         NLProcessor.__sim_topic_summaries = topic_summaries
 
+    @staticmethod
+    def set_similarity_clusters(requirements, summary_clusters):
+        NLProcessor.__sim_requirements = (set.union(*[NLProcessor.__synonyms(req) for req in requirements]) if requirements else None)
+        NLProcessor.__sim_summary_clusters = summary_clusters
+
     # set of normalized (stemmed & non-stopword) synonyms
     @staticmethod
     def __synonyms(word):
@@ -79,6 +85,18 @@ class NLProcessor:
         for topic, summaries in NLProcessor.__sim_topic_summaries.items()}
         return max(topic_sims.values())
 
+    @staticmethod
+    def cluster_similarity(doc):
+        best_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), NLProcessor.__sim_summary_clusters.keys()[0])
+        best_key = NLProcessor.__sim_summary_clusters.keys()[0]
+        for cluster_key in NLProcessor.__sim_summary_clusters.keys():
+            current_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), cluster_key)
+            if current_similarity < best_similarity:
+                best_key = cluster_key
+        return sum([
+            NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
+            for summary in NLProcessor.__sim_summary_clusters[best_key]]
+            ) / len(NLProcessor.__sim_requirements[best_key])
 
     # MARK: SENTIMENT ANALYSIS
 

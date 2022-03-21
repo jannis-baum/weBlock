@@ -35,18 +35,18 @@ def sample_randomsearch(dataset, samplesize, iterations):
             previous_fitness = fitness
     return previous_sample
 
-def find_best_match(cluster_medians, summary):
-    cluster_median_similarities = [pairdistance(median, summary) for median in cluster_medians]
-    return cluster_medians[cluster_median_similarities.index(min(cluster_median_similarities))]
+def find_best_match(cluster_keys, summary):
+    cluster_key_similarities = [pairdistance(key, summary) for key in cluster_keys]
+    return cluster_keys[cluster_key_similarities.index(min(cluster_key_similarities))]
 
 
 def create_clusters(samplesize, iterations):
     dataset = DatabaseNegative.get_all_summaries()
-    cluster_medians = sample_randomsearch(dataset, samplesize, iterations)
+    cluster_keys = sample_randomsearch(dataset, samplesize, iterations)
     remaining_data = list(set(cluster_medians) - set(dataset))
     clusters = dict()
     for summary in remaining_data:
-        match = find_best_match(cluster_medians, summary)
+        match = find_best_match(cluster_keys, summary)
         if match in clusters:
             clusters[match].append(summary)
         else:

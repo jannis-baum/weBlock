@@ -16,7 +16,7 @@ class PageElement:
 
     def similarity(self):
         if not self.__similarity:
-            self.__similarity = NLProcessor.similarity(self.text)
+            self.__similarity = NLProcessor.cluster_similarity(self.text)
         return self.__similarity
 
     def sentiment(self):
