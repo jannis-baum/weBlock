@@ -26,7 +26,7 @@ After installation you should change the variables in `server/.env` to match you
 
 `NEGATIVE_QUERIES` should hold a comma seperated list of Google News search queries of articles with negative opinions about your topic. For instance, an option to promote opinions of the flat earth society could be `round earth site:news.com, earth globe`.
 
-Similarly, `POSITIVE_QUERIES` should also hold of Google News queries but about articles that support your view, e.g. `site:flatearthsociety.com when:7d`. 
+Similarly, `POSITIVE_QUERIES` should also hold a list of Google News queries but about articles that support your view, e.g. `site:flatearthsociety.com when:7d`. 
 
 More details about queries can be found inside the detailed guide below.
 
