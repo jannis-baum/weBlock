@@ -20,15 +20,17 @@ Browsing with the extension loaded will behave normally, but you will notice a c
 
 ### Server
 
-#### Configure your Censorship
+#### Configure your censorship
 
-After the Installation you should change the variables in `server/.env` to match your desired censoring. By default you will find changeme values so you can customize it to your desired content.
+After installation you should change the variables in `server/.env` to match your desired censoring configuration. By default, you will find `CHANGEME` values so you can customize it to your desired content.
 
-`NEGATIVE_QUERIES` should hold a comma seperated list of google news search queries of articles with negative opinions about your topic. For instance one could be `round earth site:news.com, earth globe` if you want to promote opinions of the flat earth society. 
+`NEGATIVE_QUERIES` should hold a comma seperated list of Google News search queries of articles with negative opinions about your topic. For instance, an option to promote opinions of the flat earth society could be `round earth site:news.com, earth globe`.
 
-Similarly `POSITIVE_QUERIES` also is supposed to be a list of google news queries but about articles that support your view like `site:flatearthsociety.com when:7d`. 
+Similarly, `POSITIVE_QUERIES` should also hold of Google News queries but about articles that support your view, e.g. `site:flatearthsociety.com when:7d`. 
 
-To make your Censoring more precise it is necessary to add a list of `CENSOR_REQUIREMENTS`. These are words that definitely should be found in a text you want to center like `earth, planet, sphere`. More Details about this can be found inside the detailed guide below.
+More details about queries can be found inside the detailed guide below.
+
+To make your censoring more precise, it is also recommended to add a list of `CENSOR_REQUIREMENTS`. These words (or synonyms of them) will be required to be included in a paragraph for it to be censored like `earth, planet, sphere`.
 
 #### Quick start with example
 
