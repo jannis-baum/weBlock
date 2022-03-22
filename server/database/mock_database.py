@@ -1,3 +1,4 @@
+from websockets import Data
 from definitions import DATABASE_NEGATIVE_PATH, DATABASE_POSITIVE_PATH
 import yaml
 
@@ -16,20 +17,23 @@ class DatabaseNegative:
             }
 
     @staticmethod
+    def __write_data(data):
+        with open(DATABASE_POSITIVE_PATH, "w") as mock_db:
+            yaml.dump(data, mock_db, default_flow_style=False)
+
+    @staticmethod
     def insert(topic, summary, source):
         data = DatabaseNegative.__get_data()
         if topic in data['articles']: data['articles'][topic].append(summary)
         else: data['articles'][topic] = [summary]
         data['sources'].append(source)
-        with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
-            yaml.dump(data, mock_db, default_flow_style=False)
+        DatabaseNegative.__write_data(data)
 
     @staticmethod
     def insert_new_clusters(cluster_dict):
         data = DatabaseNegative.__get_data()
         data['clusters'] = cluster_dict
-        with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
-            yaml.dump(data, mock_db, default_flow_style=False)
+        DatabaseNegative.__write_data(data)
 
 
     @staticmethod
@@ -38,11 +42,7 @@ class DatabaseNegative:
 
     @staticmethod
     def get_all_summaries():
-        article_dict = DatabaseNegative.__get_data()['articles']
-        summaries = list()
-        for topic in article_dict.keys():
-            summaries += article_dict[topic]
-        return summaries
+        return [article for group in DatabaseNegative.__get_data()['articles'].values() for article in group]
 
     @staticmethod
     def get_sources():

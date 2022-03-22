@@ -54,28 +54,23 @@ def create_clusters(samplesize, iterations):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
     parser.add_argument("-n", "--narticles", type=int, action="store", default=10)
-    parser.add_argument("-c", "--cluster", action="store_true")
-    parser.add_argument("-e", "--exclusive_clustering", action="store_true")
     parser.add_argument("-i", "--iterations", type=int, action="store", default=50)
     parser.add_argument("-s", "--sample_size", type=int, action="store", default=5)
     args = parser.parse_args()
     
-    if args.exclusive_clustering:
-        create_clusters(args.sample_size, args.iterations)
-    else:
-        if args.narticles <= 0:
-            print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
-            sys.exit(1)
-        if len(NEGATIVE_QUERIES) == 0:
-            print("No negative queries have been supplied in .env\nExiting")
-            sys.exit(1)
 
-        def process_page(page_processor, url, query):
-            if url in DatabaseNegative.get_sources(): return
-            summary = NLProcessor.summarize(page_processor.get_fulltext())
-            DatabaseNegative.insert(query, summary, url)
-        scrape_news_pages(NEGATIVE_QUERIES, args.narticles, process_page)
-        if args.cluster:
-            create_clusters(args.sample_size, args.iterations)
+    if args.narticles <= 0:
+        print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
+        sys.exit(1)
+    if len(NEGATIVE_QUERIES) == 0:
+        print("No negative queries have been supplied in .env\nExiting")
+        sys.exit(1)
+
+    def process_page(page_processor, url, query):
+        if url in DatabaseNegative.get_sources(): return
+        summary = NLProcessor.summarize(page_processor.get_fulltext())
+        DatabaseNegative.insert(query, summary, url)
+    scrape_news_pages(NEGATIVE_QUERIES, args.narticles, process_page)
+    create_clusters(args.sample_size, args.iterations)
     print("DONE")
 

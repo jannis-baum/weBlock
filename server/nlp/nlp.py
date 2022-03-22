@@ -50,49 +50,22 @@ class NLProcessor:
     @staticmethod
     def ready(): NLProcessor.__get_word_vectors()
 
-    # setup - similarity data
     @staticmethod
-    def set_similarity_data(requirements, topic_summaries):
-        NLProcessor.__sim_requirements = (
-            set.union(*[NLProcessor.__synonyms(req) for req in requirements])
-            if requirements else None
-        )
-        NLProcessor.__sim_topic_summaries = topic_summaries
-
-    @staticmethod
-    def set_similarity_clusters(requirements, summary_clusters):
-        NLProcessor.__sim_requirements = (set.union(*[NLProcessor.__synonyms(req) for req in requirements]) if requirements else None)
+    def set_similarity_clusters(summary_clusters):
+        #set the clustered negative summarizations
         NLProcessor.__sim_summary_clusters = summary_clusters
-
-    # set of normalized (stemmed & non-stopword) synonyms
-    @staticmethod
-    def __synonyms(word):
-        syns = [lemm.name().replace('_', ' ') for syn in wordnet.synsets(word) for lemm in syn.lemmas()]
-        return set(NLProcessor.__normal_tokens(' '.join(syns + [word])))
-    
-    # Word Mover's Distance to closest topic summaries with synonyms as requirements
-    @staticmethod
-    def similarity(doc):
-        if len(NLProcessor.__sim_topic_summaries) == 0: return 0
-        if NLProcessor.__sim_requirements:
-            compare_normal_tokens = set(NLProcessor.__normal_tokens(doc))
-            if not (NLProcessor.__sim_requirements & compare_normal_tokens):
-                return 0
-        topic_sims = {
-            topic: 1 / sum([
-                NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
-            for summary in summaries]) * len(summaries)
-        for topic, summaries in NLProcessor.__sim_topic_summaries.items()}
-        return max(topic_sims.values())
 
     @staticmethod
     def cluster_similarity(doc):
+        #find the cluster-key that is most similar to the doc
         best_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), list(NLProcessor.__sim_summary_clusters.keys())[0])
         best_key = list(NLProcessor.__sim_summary_clusters.keys())[0]
         for cluster_key in list(NLProcessor.__sim_summary_clusters.keys()):
             current_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), cluster_key)
             if current_similarity < best_similarity:
                 best_key = cluster_key
+                best_similarity = current_similarity
+        #return the average similarity between doc and all summaries from the previously found cluster
         return sum([
             NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
             for summary in NLProcessor.__sim_summary_clusters[best_key]]
@@ -100,6 +73,7 @@ class NLProcessor:
 
     @staticmethod
     def pairdistance(doc1, doc2):
+        #a public wrapper for the word movers distance needed in scrape-negative
         return NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc1, stem=False), NLProcessor.__normal_tokens(doc2, stem=False))
 
     # MARK: SENTIMENT ANALYSIS
