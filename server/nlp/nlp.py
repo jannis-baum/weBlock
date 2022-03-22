@@ -96,7 +96,7 @@ class NLProcessor:
         return sum([
             NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
             for summary in NLProcessor.__sim_summary_clusters[best_key]]
-            ) / len(NLProcessor.__sim_requirements[best_key])
+            ) / len(NLProcessor.__sim_summary_clusters[best_key])
 
     @staticmethod
     def pairdistance(doc1, doc2):
