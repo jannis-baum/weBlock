@@ -18,7 +18,7 @@ class DatabaseNegative:
 
     @staticmethod
     def __write_data(data):
-        with open(DATABASE_POSITIVE_PATH, "w") as mock_db:
+        with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
             yaml.dump(data, mock_db, default_flow_style=False)
 
     @staticmethod
