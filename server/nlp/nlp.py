@@ -98,6 +98,10 @@ class NLProcessor:
             for summary in NLProcessor.__sim_summary_clusters[best_key]]
             ) / len(NLProcessor.__sim_requirements[best_key])
 
+    @staticmethod
+    def pairdistance(doc1, doc2):
+        return NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc1, stem=False), NLProcessor.__normal_tokens(doc2, stem=False))
+
     # MARK: SENTIMENT ANALYSIS
 
     @staticmethod

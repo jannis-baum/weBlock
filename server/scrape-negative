@@ -10,8 +10,6 @@ from scraper.scrape_news import scrape_news_pages
 from nlp.nlp import NLProcessor
 from database.mock_database import DatabaseNegative
 
-def pairdistance(summary1, summary2):
-    return NLProcessor.__get_word_vectors().wm_distance(summary1, summary2)
 
 def sample_fitness(sample):
     #fitness of a sample is the mean pairwise distance between all summaries in the sample,
@@ -21,7 +19,7 @@ def sample_fitness(sample):
         base = sample[0]
         sample = sample[1:]
         for element in sample:
-            fitness += pairdistance(base, element)
+            fitness += NLProcessor.pairdistance(base, element)
     return fitness
 
 def sample_randomsearch(dataset, samplesize, iterations):
