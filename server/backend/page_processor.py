@@ -42,7 +42,7 @@ class PageProcessor:
 
     @staticmethod
     def setup_censoring(censoring_requirements, censoring_topic_comparison):
-        NLProcessor.set_similarity_data(
+        NLProcessor.set_similarity_clusters(
             censoring_requirements, censoring_topic_comparison
         )
         NLProcessor.ready()
