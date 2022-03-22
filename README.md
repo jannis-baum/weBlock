@@ -6,7 +6,7 @@ This is a collaborative project with [lucasliebe](https://github.com/lucasliebe)
 
 ## Installation
 
-This project consists of a client and server, which can be installed and run separately. Both actors require a working installation of [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/) and [Zsh](https://www.zsh.org) or [Bash](https://www.gnu.org/software/bash/). In addition, the client requires [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com) and the server requires [Python 3](https://www.python.org), [Geckodriver](https://github.com/mozilla/geckodriver/releases) (which is installed by downloading the operating system's respective executable and moving it into the `$PATH`), [Make](https://www.gnu.org/software/make/) and [GCC](https://gcc.gnu.org).
+This project consists of a client and server, which can be installed and run separately. Both actors require a working installation of [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/) and [Zsh](https://www.zsh.org) or [Bash](https://www.gnu.org/software/bash/). In addition, the client requires [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com) and the server requires [Python 3](https://www.python.org) together with python3-venv, [Geckodriver](https://github.com/mozilla/geckodriver/releases) (which is installed by downloading the operating system's respective executable and moving it into the `$PATH`), [Make](https://www.gnu.org/software/make/) and [GCC](https://gcc.gnu.org).
 
 With the above requirements met, the install script can be run in `bash` or `zsh`, e.g.`./install.sh` to install both client as well as server or with an argument `client` or `server` to install only the respective actor.
 
@@ -19,6 +19,18 @@ To run the client, go the the `client/` directory and run `yarn start`. This wil
 Browsing with the extension loaded will behave normally, but you will notice a circle icon show up on the right side of the URL field for tabs with supported webpages (http(s), html).Clicking the icon once will put the ad-blocker to work doing it's best to remove advertisements and give you a preview of what content will be censored by coloring it red. Clicking it a second time will engage censoring and replace the red text with content the censorer (server) deems as friendly but still contextually relevant.
 
 ### Server
+
+#### Configure your censorship
+
+After installation you should change the variables in `server/.env` to match your desired censoring configuration. By default, you will find `CHANGEME` values so you can customize it to your desired content.
+
+`NEGATIVE_QUERIES` should hold a comma seperated list of Google News search queries of articles with negative opinions about your topic. For instance, an option to promote opinions of the flat earth society could be `round earth site:news.com, earth globe`.
+
+Similarly, `POSITIVE_QUERIES` should also hold a list of Google News queries but about articles that support your view, e.g. `site:flatearthsociety.com when:7d`. 
+
+More details about queries can be found inside the detailed guide below.
+
+To make your censoring more precise, it is also recommended to add a list of `CENSOR_REQUIREMENTS`. These words (or synonyms of them) will be required to be included in a paragraph for it to be censored like `earth, planet, sphere`.
 
 #### Quick start with example
 

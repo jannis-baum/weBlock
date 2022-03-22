@@ -42,11 +42,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     from database.mock_database import DatabaseNegative
     # these words or any of their synonyms need to be in text to be considered similar to statement
-    censoring_requirements = ["china", "chinese"]
+    from definitions import CENSOR_REQUIREMENTS
     # prepare NLP
     ts = time_start("NLP setup ...")
     PageProcessor.setup_censoring(
-        censoring_requirements,
+        CENSOR_REQUIREMENTS,
         DatabaseNegative.get_clusters()
     )
     time_finish(ts)

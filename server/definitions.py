@@ -12,6 +12,7 @@ DATABASE_NEGATIVE_PATH = os.path.join(ROOT_DIR, 'database', '.mock-negative.yaml
 
 POSITIVE_QUERIES = os.getenv("POSITIVE_QUERIES", "").split(", ")
 NEGATIVE_QUERIES = os.getenv("NEGATIVE_QUERIES", "").split(", ")
+CENSOR_REQUIREMENTS = os.getenv("CENSOR_REQUIREMENTS", "").split(", ")
 
 TRAINING_TOPICS = int(os.getenv("TRAINING_TOPICS", "20"))
 TRAINING_ALPHA = float(os.getenv("TRAINING_ALPHA", "2.5"))
