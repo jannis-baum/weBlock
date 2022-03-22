@@ -87,9 +87,9 @@ class NLProcessor:
 
     @staticmethod
     def cluster_similarity(doc):
-        best_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), NLProcessor.__sim_summary_clusters.keys()[0])
-        best_key = NLProcessor.__sim_summary_clusters.keys()[0]
-        for cluster_key in NLProcessor.__sim_summary_clusters.keys():
+        best_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), list(NLProcessor.__sim_summary_clusters.keys())[0])
+        best_key = list(NLProcessor.__sim_summary_clusters.keys())[0]
+        for cluster_key in list(NLProcessor.__sim_summary_clusters.keys()):
             current_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), cluster_key)
             if current_similarity < best_similarity:
                 best_key = cluster_key
