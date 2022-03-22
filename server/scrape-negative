@@ -26,6 +26,7 @@ def sample_randomsearch(dataset, samplesize, iterations):
     previous_fitness = 0
     previous_sample = list()
     for i in range(iterations):
+        print(f"\r\033[K    \033[1mrandom search iteration {i}", end="")
         sample = random.sample(dataset, samplesize)
         fitness = sample_fitness(sample)
         if fitness > previous_fitness:
@@ -34,14 +35,14 @@ def sample_randomsearch(dataset, samplesize, iterations):
     return previous_sample
 
 def find_best_match(cluster_keys, summary):
-    cluster_key_similarities = [pairdistance(key, summary) for key in cluster_keys]
+    cluster_key_similarities = [NLProcessor.pairdistance(key, summary) for key in cluster_keys]
     return cluster_keys[cluster_key_similarities.index(min(cluster_key_similarities))]
 
 
 def create_clusters(samplesize, iterations):
     dataset = DatabaseNegative.get_all_summaries()
     cluster_keys = sample_randomsearch(dataset, samplesize, iterations)
-    remaining_data = list(set(cluster_medians) - set(dataset))
+    remaining_data = list(set(cluster_keys) - set(dataset))
     clusters = dict()
     for summary in remaining_data:
         match = find_best_match(cluster_keys, summary)
