@@ -41,13 +41,12 @@ def find_best_match(cluster_keys, summary):
 def create_clusters(samplesize, iterations):
     dataset = DatabaseNegative.get_all_summaries()
     cluster_keys = sample_randomsearch(dataset, samplesize, iterations)
-    clusters = dict()
+    clusters = list()
+    for key in cluster_keys:
+        clusters.append({"cluster_key": key, "cluster_summaries":[key]})
     for summary in dataset:
         match = find_best_match(cluster_keys, summary)
-        if match in clusters.keys():
-            clusters[match].append(summary)
-        else:
-            clusters[match] = [summary]
+        clusters[cluster_keys.index(match)]["cluster_summaries"].append(summary)
     DatabaseNegative.insert_new_clusters(clusters)
 
 

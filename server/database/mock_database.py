@@ -12,7 +12,7 @@ class DatabaseNegative:
             return {
                 'articles': dict(),
                 'sources': list(),
-                'clusters': dict()
+                'clusters': list()
             }
 
     @staticmethod
@@ -29,9 +29,9 @@ class DatabaseNegative:
         DatabaseNegative.__write_data(data)
 
     @staticmethod
-    def insert_new_clusters(cluster_dict):
+    def insert_new_clusters(cluster_list):
         data = DatabaseNegative.__get_data()
-        data['clusters'] = cluster_dict
+        data['clusters'] = cluster_list
         DatabaseNegative.__write_data(data)
 
 

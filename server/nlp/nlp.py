@@ -72,18 +72,13 @@ class NLProcessor:
     #find the cluster-key that is most similar to the doc
     @staticmethod
     def cluster_similarity(doc):
-        best_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), list(NLProcessor.__sim_summary_clusters.keys())[0])
-        best_key = list(NLProcessor.__sim_summary_clusters.keys())[0]
-        for cluster_key in list(NLProcessor.__sim_summary_clusters.keys()):
-            current_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), cluster_key)
-            if current_similarity < best_similarity:
-                best_key = cluster_key
-                best_similarity = current_similarity
+        #identify the cluster most similar to doc using the representative cluster_key
+        best_cluster = NLProcessor.__sim_summary_clusters[0]
+        for cluster in NLProcessor.__sim_summary_clusters[1:]:
+            if NLProcessor.pairdistance(doc, cluster["cluster_key"]) < NLProcessor.pairdistance(doc, best_cluster["cluster_key"]):
+                best_cluster = cluster
         #return the average similarity between doc and all summaries from the previously found cluster
-        return sum([
-            NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), summary)
-            for summary in NLProcessor.__sim_summary_clusters[best_key]]
-            ) / len(NLProcessor.__sim_summary_clusters[best_key])
+        return sum([NLProcessor.pairdistance(doc, summary) for summary in best_cluster["cluster_summaries"]]) / len(best_cluster["cluster_summaries"])
 
     #a public wrapper for the word movers distance needed in scrape-negative
     @staticmethod
