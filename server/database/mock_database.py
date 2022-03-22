@@ -1,4 +1,3 @@
-from websockets import Data
 from definitions import DATABASE_NEGATIVE_PATH, DATABASE_POSITIVE_PATH
 import yaml
 

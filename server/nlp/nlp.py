@@ -14,7 +14,6 @@ class NLProcessor:
     __word_vectors_id = 'word2vec-google-news-300'
     __word_vectors = None
     __sim_requirements = None
-    __sim_topic_summaries = dict()
     __sim_summary_clusters = dict()
     __sentimentIA = SentimentIntensityAnalyzer()
 
@@ -47,11 +46,16 @@ class NLProcessor:
         return NLProcessor.__word_vectors
     @staticmethod
     def set_word_vectors(vectors): NLProcessor.__word_vectors = vectors
-    @staticmethod
-    def ready(): NLProcessor.__get_word_vectors()
 
+    #parts of the similarity are initialized lazily,
+    #so the call to pairdistance is made here instead of during the first request
     @staticmethod
+    def ready():
+        NLProcessor.__get_word_vectors()
+        NLProcessor.pairdistance("Lazy init", "Lazy init")
+
     #set the clustered negative summarizations
+    @staticmethod
     def set_similarity_clusters(requirements, summary_clusters):
         NLProcessor.__sim_requirements = (
             set.union(*[NLProcessor.__synonyms(req) for req in requirements])
@@ -65,9 +69,9 @@ class NLProcessor:
         syns = [lemm.name().replace('_', ' ') for syn in wordnet.synsets(word) for lemm in syn.lemmas()]
         return set(NLProcessor.__normal_tokens(' '.join(syns + [word])))
 
+    #find the cluster-key that is most similar to the doc
     @staticmethod
     def cluster_similarity(doc):
-        #find the cluster-key that is most similar to the doc
         best_similarity = NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc, stem=False), list(NLProcessor.__sim_summary_clusters.keys())[0])
         best_key = list(NLProcessor.__sim_summary_clusters.keys())[0]
         for cluster_key in list(NLProcessor.__sim_summary_clusters.keys()):
@@ -81,9 +85,9 @@ class NLProcessor:
             for summary in NLProcessor.__sim_summary_clusters[best_key]]
             ) / len(NLProcessor.__sim_summary_clusters[best_key])
 
+    #a public wrapper for the word movers distance needed in scrape-negative
     @staticmethod
     def pairdistance(doc1, doc2):
-        #a public wrapper for the word movers distance needed in scrape-negative
         return NLProcessor.__get_word_vectors().wmdistance(NLProcessor.__normal_tokens(doc1, stem=False), NLProcessor.__normal_tokens(doc2, stem=False))
 
     # MARK: SENTIMENT ANALYSIS

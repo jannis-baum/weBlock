@@ -55,6 +55,7 @@ For the collection of data, weBlock relies on [Google News](https://news.google.
 `scrape-negative` is used to collect examples for what is undesired by the censorer. It searches Google News with the comma-separated queries defined in the environment variable `NEGATIVE_QUERIES` in `server/.env`.\
 `scrape-negative` also clusters the scraped summaries with an implementation of random search. Random search requires a number of iterations, which can be set with
 `-i` and a sample size, set with `-s`, i.e. the number of clusters that will be in the resulting database. Both arguments have default values when omitted.
+Default for `-i` is 50 and default for `-s` is 5.
 The scraped articles are then used as negative examples in censoring, where the [Word Mover's Distance](http://proceedings.mlr.press/v37/kusnerb15.pdf) of a paragraph to the scraped article's summaries plays a role in determining wether that paragraph should be censored.
 
 `scrape-positive` is used to collect examples for what is desired by the censorer. It, analogously to `scrape-negative`, searches Google News with the comma-separated queries defined in the environment variable `POSITIVE_QUERIES` in `server/.env`.\
