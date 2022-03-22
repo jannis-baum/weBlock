@@ -56,7 +56,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--narticles", type=int, action="store", default=10)
     parser.add_argument("-c", "--cluster", action="store_true")
     parser.add_argument("-e", "--exclusive_clustering", action="store_true")
-    parser.add_argument("-i", "--iterations", type=int, action="store", default=1000)
+    parser.add_argument("-i", "--iterations", type=int, action="store", default=50)
     parser.add_argument("-s", "--sample_size", type=int, action="store", default=5)
     args = parser.parse_args()
     

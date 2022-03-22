@@ -115,7 +115,7 @@ class NLProcessor:
     @staticmethod
     def preprocess_article(doc):
         paragraph = re.sub("\s+", " ", doc)
-        if any(c in paragraph for c in "/\n_|\\@") or len(paragraph) < 10:
+        if any(c in paragraph.lower() for c in ["/", "\n","_","|", "\\", "@", "copyright"]) or len(paragraph) < 10:
             return None
         return paragraph
 

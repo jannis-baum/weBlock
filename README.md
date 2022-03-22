@@ -34,7 +34,7 @@ To make your censoring more precise, it is also recommended to add a list of `CE
 
 #### Quick start with example
 
-Run `source server/activate`, then `server/scrape-postive -t && server/scrape-negative && server/run-backend` and use the client as described above when scripts are ready (i.e. the prompt
+Run `source server/activate`, then `server/scrape-postive -t && server/scrape-negative -c && server/run-backend` and use the client as described above when scripts are ready (i.e. the prompt
 
 ```
 setup done, waiting for connection
