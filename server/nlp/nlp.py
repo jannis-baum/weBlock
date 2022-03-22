@@ -51,9 +51,19 @@ class NLProcessor:
     def ready(): NLProcessor.__get_word_vectors()
 
     @staticmethod
-    def set_similarity_clusters(summary_clusters):
-        #set the clustered negative summarizations
+    #set the clustered negative summarizations
+    def set_similarity_clusters(requirements, summary_clusters):
+        NLProcessor.__sim_requirements = (
+            set.union(*[NLProcessor.__synonyms(req) for req in requirements])
+            if requirements else None
+        )
         NLProcessor.__sim_summary_clusters = summary_clusters
+
+    # set of normalized (stemmed & non-stopword) synonyms
+    @staticmethod
+    def __synonyms(word):
+        syns = [lemm.name().replace('_', ' ') for syn in wordnet.synsets(word) for lemm in syn.lemmas()]
+        return set(NLProcessor.__normal_tokens(' '.join(syns + [word])))
 
     @staticmethod
     def cluster_similarity(doc):

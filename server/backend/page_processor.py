@@ -41,11 +41,9 @@ class PageProcessor:
     censoring_threshold = 16
 
     @staticmethod
-    def setup_censoring(summarization_clusters):
-        NLProcessor.set_similarity_clusters(summarization_clusters)
+    def setup_censoring(censoring_requirements, summarization_clusters):
+        NLProcessor.set_similarity_clusters(censoring_requirements, summarization_clusters)
         NLProcessor.ready()
-        # something in gensim/wmdistance is lazily initialized so we
-        # call similarity to prevent extra waiting time on first censoring
         PageProcessor.__text_matcher = TextMatcher()
 
     def __init__(self, request):
