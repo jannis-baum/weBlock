@@ -38,7 +38,7 @@ class PageElement:
 
 
 class PageProcessor:
-    censoring_threshold = 10
+    censoring_threshold = 16
 
     @staticmethod
     def setup_censoring(summarization_clusters):
@@ -70,8 +70,6 @@ class PageProcessor:
             if element.score() >= PageProcessor.censoring_threshold:
                 if self.should_replace:
                     element.text = PageProcessor.__text_matcher.find_matching(NLProcessor.normalize(element.text))
-                #debugging info for threshold search
-                element.text +=str(element.score())
                 element.html = (
                     '<div style="color: red !important;">' + element.text + "</div>"
                 )
