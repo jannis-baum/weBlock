@@ -11,8 +11,14 @@ class DatabaseNegative:
         except:
             return {
                 'articles': dict(),
-                'sources': list()
+                'sources': list(),
+                'clusters': list()
             }
+
+    @staticmethod
+    def __write_data(data):
+        with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
+            yaml.dump(data, mock_db, default_flow_style=False)
 
     @staticmethod
     def insert(topic, summary, source):
@@ -20,16 +26,31 @@ class DatabaseNegative:
         if topic in data['articles']: data['articles'][topic].append(summary)
         else: data['articles'][topic] = [summary]
         data['sources'].append(source)
-        with open(DATABASE_NEGATIVE_PATH, "w") as mock_db:
-            yaml.dump(data, mock_db, default_flow_style=False)
+        DatabaseNegative.__write_data(data)
+
+    @staticmethod
+    def insert_new_clusters(cluster_list):
+        data = DatabaseNegative.__get_data()
+        data['clusters'] = cluster_list
+        DatabaseNegative.__write_data(data)
+
 
     @staticmethod
     def get_summaries_by_topics():
         return DatabaseNegative.__get_data()['articles']
 
     @staticmethod
+    def get_all_summaries():
+        return [article for group in DatabaseNegative.__get_data()['articles'].values() for article in group]
+
+    @staticmethod
     def get_sources():
         return DatabaseNegative.__get_data()['sources']
+
+    @staticmethod
+    def get_clusters():
+        return DatabaseNegative.__get_data()['clusters']
+
 
 class DatabasePositive:
     @staticmethod

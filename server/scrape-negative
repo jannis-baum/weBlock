@@ -3,28 +3,73 @@
 from helpers.validator import validate_venv
 validate_venv()
 
-import sys, argparse
+import sys, argparse, random
 
 from definitions import NEGATIVE_QUERIES
 from scraper.scrape_news import scrape_news_pages
 from nlp.nlp import NLProcessor
+from database.mock_database import DatabaseNegative
+
+
+def sample_fitness(sample):
+    #fitness of a sample is the mean pairwise distance between all summaries in the sample,
+    #not double-counting the distances
+    fitness = 0
+    while len(sample) > 0:
+        base = sample[0]
+        sample = sample[1:]
+        for element in sample:
+            fitness += NLProcessor.pairdistance(base, element)
+    return fitness
+
+def sample_randomsearch(dataset, samplesize, iterations):
+    previous_fitness = 0
+    previous_sample = list()
+    for i in range(iterations):
+        sample = random.sample(dataset, samplesize)
+        fitness = sample_fitness(sample)
+        if fitness > previous_fitness:
+            previous_sample = sample
+            previous_fitness = fitness
+    return previous_sample
+
+def find_best_match(cluster_keys, summary):
+    cluster_key_similarities = [NLProcessor.pairdistance(key, summary) for key in cluster_keys]
+    return cluster_keys[cluster_key_similarities.index(min(cluster_key_similarities))]
+
+
+def create_clusters(samplesize, iterations):
+    dataset = DatabaseNegative.get_all_summaries()
+    cluster_keys = sample_randomsearch(dataset, samplesize, iterations)
+    clusters = list()
+    for key in cluster_keys:
+        clusters.append({"cluster_key": key, "cluster_summaries":[key]})
+    for summary in dataset:
+        match = find_best_match(cluster_keys, summary)
+        clusters[cluster_keys.index(match)]["cluster_summaries"].append(summary)
+    DatabaseNegative.insert_new_clusters(clusters)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="scraper")
     parser.add_argument("-n", "--narticles", type=int, action="store", default=10)
+    parser.add_argument("-i", "--iterations", type=int, action="store", default=50)
+    parser.add_argument("-s", "--sample_size", type=int, action="store", default=5)
     args = parser.parse_args()
+    
+
     if args.narticles <= 0:
         print("Sorry, values <= 0 are not valid numbers for articles to be scraped\nExiting")
         sys.exit(1)
     if len(NEGATIVE_QUERIES) == 0:
         print("No negative queries have been supplied in .env\nExiting")
         sys.exit(1)
-    from database.mock_database import DatabaseNegative
 
     def process_page(page_processor, url, query):
         if url in DatabaseNegative.get_sources(): return
         summary = NLProcessor.summarize(page_processor.get_fulltext())
         DatabaseNegative.insert(query, summary, url)
     scrape_news_pages(NEGATIVE_QUERIES, args.narticles, process_page)
+    create_clusters(args.sample_size, args.iterations)
     print("DONE")
 

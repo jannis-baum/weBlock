@@ -15,8 +15,8 @@ class PageElement:
         self.context_elements = context_elements
 
     def similarity(self):
-        if not self.__similarity:
-            self.__similarity = NLProcessor.similarity(self.text)
+        if self.__similarity is None:
+            self.__similarity = NLProcessor.cluster_similarity(self.text)
         return self.__similarity
 
     def sentiment(self):
@@ -38,17 +38,12 @@ class PageElement:
 
 
 class PageProcessor:
-    censoring_threshold = 10
+    censoring_threshold = 16
 
     @staticmethod
-    def setup_censoring(censoring_requirements, censoring_topic_comparison):
-        NLProcessor.set_similarity_data(
-            censoring_requirements, censoring_topic_comparison
-        )
+    def setup_censoring(censoring_requirements, summarization_clusters):
+        NLProcessor.set_similarity_clusters(censoring_requirements, summarization_clusters)
         NLProcessor.ready()
-        # something in gensim/wmdistance is lazily initialized so we
-        # call similarity to prevent extra waiting time on first censoring
-        NLProcessor.similarity(' '.join(censoring_requirements))
         PageProcessor.__text_matcher = TextMatcher()
 
     def __init__(self, request):
