@@ -72,6 +72,11 @@ class NLProcessor:
     #find the cluster-key that is most similar to the doc
     @staticmethod
     def cluster_similarity(doc):
+        #check if text should be censored according to requirements
+        if NLProcessor.__sim_requirements:
+            compare_normal_tokens = set(NLProcessor.__normal_tokens(doc))
+            if not (NLProcessor.__sim_requirements & compare_normal_tokens):
+                return 0
         #identify the cluster most similar to doc using the representative cluster_key
         best_cluster = NLProcessor.__sim_summary_clusters[0]
         for cluster in NLProcessor.__sim_summary_clusters[1:]:

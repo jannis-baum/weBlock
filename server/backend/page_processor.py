@@ -15,7 +15,7 @@ class PageElement:
         self.context_elements = context_elements
 
     def similarity(self):
-        if not self.__similarity:
+        if self.__similarity is None:
             self.__similarity = NLProcessor.cluster_similarity(self.text)
         return self.__similarity
 
