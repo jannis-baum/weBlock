@@ -34,7 +34,7 @@ class PageElement:
             if self.context_elements
             else self.similarity()
         )
-        return (sim + self.sentiment()) * self.sentiment() * 100
+        return (sim + self.sentiment()) * (self.sentiment() + 0.01) * 100
 
 
 class PageProcessor:
