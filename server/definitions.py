@@ -9,6 +9,7 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 
 DATABASE_POSITIVE_PATH = os.path.join(ROOT_DIR, 'database', '.mock-positive.yaml')
 DATABASE_NEGATIVE_PATH = os.path.join(ROOT_DIR, 'database', '.mock-negative.yaml')
+DATABASE_AUTHORS_PATH = os.path.join(ROOT_DIR, 'database', '.mock-authors.yaml')
 
 POSITIVE_QUERIES = os.getenv("POSITIVE_QUERIES", "").split(", ")
 NEGATIVE_QUERIES = os.getenv("NEGATIVE_QUERIES", "").split(", ")
